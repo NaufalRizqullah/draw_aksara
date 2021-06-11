@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 void main() => runApp(new MaterialApp(
@@ -26,7 +28,7 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               RenderBox object = context.findRenderObject();
               Offset _localPosition =
-                  object.globalToLocal(details.globalPosition);
+                  object.globalToLocal(details.localPosition);
               _points = new List.from(_points)..add(_localPosition);
             });
           },
@@ -64,6 +66,9 @@ class Signature extends CustomPainter {
       if (points[i] != null && points[i + 1] != null) {
         // kalo terpenuhin maka diambil point i dan point i+1 untuk di gambar line-nya;
         canvas.drawLine(points[i], points[i + 1], paint);
+      } else if(points[i] != null && points[i + 1] == null){
+        // kalo terpenuhin maka diambil point i untuk di gambar dot-nya;
+        canvas.drawPoints(PointMode.points, [points[i]], paint);
       }
     }
   }
