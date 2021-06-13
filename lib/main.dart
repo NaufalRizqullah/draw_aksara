@@ -1,12 +1,14 @@
 import 'dart:ui';
-
-import 'package:draw_aksara/signature.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:draw_aksara/my_image_view.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(new MaterialApp(
-      home: new HomePage(),
-      debugShowCheckedModeBanner: false,
-    ));
+void main() => runApp(
+      MaterialApp(
+        home: HomePage(),
+        debugShowCheckedModeBanner: false,
+      ),
+    );
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,35 +16,35 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Offset> _points = <Offset>[];
-
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text("Draw Aksara"),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.blueAccent,
       ),
-      body: Container(
-        child: new GestureDetector(
-          onPanUpdate: (DragUpdateDetails details) {
-            setState(() {
-              RenderBox object = context.findRenderObject();
-              Offset _localPosition =
-                  object.globalToLocal(details.localPosition);
-              _points = new List.from(_points)..add(_localPosition);
-            });
-          },
-          onPanEnd: (DragEndDetails details) => _points.add(null),
-          child: new CustomPaint(
-            painter: new Signature(points: _points),
-            size: Size.infinite,
-          ),
+      body: Center(
+        child: CarouselSlider(
+          options: CarouselOptions(height: 400.0),
+          items: [
+            'assets/1.jpg',
+            'assets/2.png',
+            'assets/3.png',
+            'assets/4.png'
+          ].map((i) {
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    child: FittedBox(
+                      fit: BoxFit.fill,
+                      child: Image.asset(i.toString()),
+                    ));
+              },
+            );
+          }).toList(),
         ),
-      ),
-      floatingActionButton: new FloatingActionButton(
-        child: new Icon(Icons.clear),
-        onPressed: () => _points.clear(),
       ),
     );
   }
