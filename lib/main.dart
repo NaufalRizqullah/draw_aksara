@@ -18,10 +18,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // init carousel slider
-  CarouselSlider _carouselSlider;
-  // index started
-  int _current = 0;
   // link image
   final List<String> imgList = [
     'https://images.unsplash.com/photo-1623460685741-b847a13bda53?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=834&q=80',
@@ -45,20 +41,6 @@ class _HomePageState extends State<HomePage> {
   // carousel controller
   CarouselController buttonCarouselController = CarouselController();
 
-  // fungsi untuk dots di indicator
-  List<T> mapDots<T>(List list, Function handler) {
-    List<T> result = [];
-
-    for (var i = 0; i < list.length; i++) {
-      // di add nanti itu => current index dan urlImage
-      result.add(handler(i, list[i]));
-    }
-
-    return result;
-  }
-
-  // function goToPrevious dan goToNext untuk berpindah halaman
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,75 +51,44 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Container(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _carouselSlider = CarouselSlider(
+            CarouselSlider(
+              carouselController: buttonCarouselController,
               items: imgAssets
                   .map(
-                    (e) => Builder(
-                      builder: (BuildContext context) {
-                        return Container(
-                          width: MediaQuery.of(context).size.width,
-                          margin: EdgeInsets.symmetric(horizontal: 10.0),
-                          decoration: BoxDecoration(
-                            color: Colors.green,
-                          ),
-                          child: Image.asset(e, fit: BoxFit.cover),
-                        );
-                      },
+                    (e) => Container(
+                      margin: EdgeInsets.all(10),
+                      child: Image.asset(e),
                     ),
                   )
                   .toList(),
               options: CarouselOptions(
-                height: 300.0,
-                initialPage: 0,
-                enlargeCenterPage: true,
-                autoPlay: false,
-                reverse: false,
-                autoPlayInterval: Duration(seconds: 2),
-                autoPlayAnimationDuration: Duration(milliseconds: 1500),
-                onPageChanged: (index, reason) {
-                  this.setState(() {
-                    // ketiga gambar di slide/ganti maka value _current akan berubah
-                    _current = index;
-                  });
-                },
+                enlargeCenterPage: false,
               ),
-            ),
-            SizedBox(
-              height: 20.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: mapDots(imgAssets, (index, url) {
-                return Container(
-                  width: 10.0,
-                  height: 10.0,
-                  margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _current == index ? Colors.redAccent : Colors.grey,
-                  ),
-                );
-              }),
-            ),
-            SizedBox(
-              height: 20.0,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 RaisedButton(
-                    onPressed: () => buttonCarouselController.previousPage(
-                          duration: Duration(milliseconds: 300),
-                        ),
-                    child: Text('<')),
+                    onPressed: () {
+                      buttonCarouselController.previousPage(
+                        duration: Duration(seconds: 1),
+                        curve: Curves.linear,
+                      );
+                    },
+                    child: Icon(
+                      Icons.arrow_back,
+                    )),
                 RaisedButton(
-                    onPressed: () => buttonCarouselController.nextPage(
-                          duration: Duration(milliseconds: 300),
-                        ),
-                    child: Text('>')),
+                    onPressed: () {
+                      buttonCarouselController.nextPage(
+                        duration: Duration(seconds: 1),
+                        curve: Curves.linear,
+                      );
+                    },
+                    child: Icon(
+                      Icons.arrow_forward,
+                    )),
               ],
             ),
           ],

@@ -123,7 +123,8 @@ class _CarouselWithDotPageAndControllerState
           children: [
             RaisedButton(
                 onPressed: () => buttonCarouselController.previousPage(
-                    duration: Duration(milliseconds: 300), curve: Curves.ease),
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.linear),
                 child: Text("Prev")),
             RaisedButton(
                 onPressed: () => buttonCarouselController.nextPage(
