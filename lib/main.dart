@@ -37,6 +37,10 @@ class _HomePageState extends State<HomePage> {
     'assets/3.png',
     'assets/4.png'
   ];
+
+  // carousel controller
+  CarouselController buttonCarouselController = CarouselController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,8 +52,45 @@ class _HomePageState extends State<HomePage> {
       body: Container(
         child: Column(
           children: [
-            CarouselWithDotPageImageNetwork(
-              imgList: imgList,
+            CarouselSlider(
+              carouselController: buttonCarouselController,
+              items: imgAssets
+                  .map(
+                    (e) => Container(
+                      margin: EdgeInsets.all(10),
+                      child: Image.asset(e),
+                    ),
+                  )
+                  .toList(),
+              options: CarouselOptions(
+                viewportFraction: 0.6,
+                enlargeCenterPage: true,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                    onPressed: () {
+                      buttonCarouselController.previousPage(
+                        duration: Duration(seconds: 1),
+                        curve: Curves.ease,
+                      );
+                    },
+                    child: Icon(
+                      Icons.arrow_back,
+                    )),
+                ElevatedButton(
+                    onPressed: () {
+                      buttonCarouselController.nextPage(
+                        duration: Duration(seconds: 1),
+                        curve: Curves.ease,
+                      );
+                    },
+                    child: Icon(
+                      Icons.arrow_forward,
+                    )),
+              ],
             ),
           ],
         ),
