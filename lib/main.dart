@@ -1,6 +1,8 @@
 import 'dart:ui';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:draw_aksara/CarouselWithDotPage.dart';
+import 'package:draw_aksara/CarouselWithDotPageAndController.dart';
+import 'package:draw_aksara/CarouselWithDotPageImageNetwork.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(
@@ -46,42 +48,8 @@ class _HomePageState extends State<HomePage> {
       body: Container(
         child: Column(
           children: [
-            Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                "Carousel with Image(Network)",
-                style: TextStyle(
-                  color: Colors.green[700],
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            ),
-            CarouselSlider(
-              items: imgList
-                  .map(
-                    (item) => Container(
-                      child: Center(
-                        child: Image.network(
-                          item,
-                          fit: BoxFit.cover,
-                          width: 1000,
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-              options: CarouselOptions(
-                autoPlay: true,
-                aspectRatio: 2.0,
-                enlargeCenterPage: true,
-              ),
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            CarouselWithDotPage(
-              imgList: imgAssets,
+            CarouselWithDotPageImageNetwork(
+              imgList: imgList,
             ),
           ],
         ),
