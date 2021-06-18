@@ -3,7 +3,7 @@ import 'package:draw_aksara/drawing_area.dart';
 import 'package:flutter/material.dart';
 
 class MyCustomPainter extends CustomPainter {
-  List<DrawingArea> points = [];
+  List<Offset> points = [];
   Color setColor;
   double strokeWidth;
 
@@ -22,23 +22,19 @@ class MyCustomPainter extends CustomPainter {
     canvas.drawRect(rect, background);
 
     // // config line/dot di draw
-    // Paint paint = Paint()
-    //   ..color = setColor
-    //   ..strokeWidth = strokeWidth
-    //   ..isAntiAlias = true
-    //   ..strokeCap = StrokeCap.round;
-
-      
+    Paint paint = Paint()
+      ..color = setColor
+      ..strokeWidth = strokeWidth
+      ..isAntiAlias = true
+      ..strokeCap = StrokeCap.round;
 
     // for loop untuk looping buat draw linennya
     for (int x = 0; x < points.length - 1; x++) {
       if (points[x] != null && points[x + 1] != null) {
         // draw line
-        Paint paint = points[x].areaPaint;
-        canvas.drawLine(points[x].point, points[x + 1].point, paint);
+        canvas.drawLine(points[x], points[x + 1], paint);
       } else if (points[x] != null && points[x + 1] == null) {
-        Paint paint = points[x].areaPaint;
-        canvas.drawPoints(PointMode.points, [points[x].point], paint);
+        canvas.drawPoints(PointMode.points, [points[x]], paint);
       }
     }
   }

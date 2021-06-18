@@ -10,7 +10,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // list yg nampung pointnya
-  List<DrawingArea> points = [];
+  List<Offset> points = [];
+
+  // savedDraw
+  List savedDraw = List.filled(5, [], growable: false);
 
   Color selectedColor;
   double strokeWidth;
@@ -90,28 +93,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: GestureDetector(
                     onPanDown: (details) {
                       this.setState(() {
-                        points.add(DrawingArea(
-                          point: details.localPosition,
-                          areaPaint: Paint()
-                            ..color = selectedColor
-                            ..strokeWidth = strokeWidth
-                            ..isAntiAlias = true
-                            ..strokeCap = StrokeCap.round,
-                        ));
+                        points.add(details.localPosition);
                       });
                     },
                     onPanUpdate: (details) {
                       this.setState(() {
                         this.setState(() {
-                        points.add(DrawingArea(
-                          point: details.localPosition,
-                          areaPaint: Paint()
-                            ..color = selectedColor
-                            ..strokeWidth = strokeWidth
-                            ..isAntiAlias = true
-                            ..strokeCap = StrokeCap.round,
-                        ));
-                      });
+                          points.add(details.localPosition);
+                        });
                       });
                     },
                     onPanEnd: (details) {
@@ -142,6 +131,28 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Row(
                     children: [
                       IconButton(
+                        icon: Icon(
+                          Icons.upload_rounded,
+                          color: selectedColor,
+                        ),
+                        onPressed: () {
+                          this.setState(() {
+                            points = List.from(savedDraw[0]);
+                            print(points);
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.save,
+                          color: selectedColor,
+                        ),
+                        onPressed: () {
+                          // index
+                          savedDraw[0] = List.from(points);
+                        },
+                      ),
+                      IconButton(
                           icon: Icon(
                             Icons.color_lens,
                             color: selectedColor,
@@ -167,6 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             this.setState(() {
                               points.clear();
                             });
+                            print(points);
                           }),
                     ],
                   ),
