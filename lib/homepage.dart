@@ -1,4 +1,3 @@
-import 'package:draw_aksara/drawing_area.dart';
 import 'package:draw_aksara/my_custom_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -13,10 +12,20 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Offset> points = [];
 
   // savedDraw
-  List savedDraw = List.filled(5, [], growable: false);
+  List savedDraw = List.filled(90, [], growable: false);
 
   Color selectedColor;
   double strokeWidth;
+
+  // fungsi untuk load dataDraw berdasarkan index
+  void loadDraw(int indexSaved) {
+    points = List.from(savedDraw[indexSaved]);
+  }
+
+  // fungsi untuk save dataDraw berdasarkan index
+  void saveDraw(int indexSaved) {
+    savedDraw[indexSaved] = List.from(points);
+  }
 
   @override
   void initState() {
@@ -81,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   Container(
                     width: width * 0.80,
-                    height: height * 0.50,
+                    height: height * 0.40,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(20.0)),
                         boxShadow: [
@@ -133,26 +142,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         IconButton(
                           icon: Icon(
-                            Icons.upload_rounded,
-                            color: selectedColor,
-                          ),
-                          onPressed: () {
-                            this.setState(() {
-                              points = List.from(savedDraw[0]);
-                            });
-                            showActionSnackBar(context, "Loaded!");
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(
                             Icons.save,
                             color: selectedColor,
                           ),
                           onPressed: () {
-                            // index
-                            this.setState(() {
-                              savedDraw[0] = List.from(points);
-                            });
                             showActionSnackBar(context, "Saved!");
                           },
                         ),
@@ -163,7 +156,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             onPressed: () {
                               selectColor();
-                              showActionSnackBar(context, "Color Change!");
                             }),
                         Expanded(
                             child: Slider(

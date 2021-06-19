@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:draw_aksara/drawing_area.dart';
 import 'package:flutter/material.dart';
 
 class MyCustomPainter extends CustomPainter {
