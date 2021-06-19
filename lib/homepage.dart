@@ -59,135 +59,231 @@ class _MyHomePageState extends State<MyHomePage> {
     final double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomLeft,
-                  colors: [
-                    Color.fromRGBO(130, 35, 135, 1.0),
-                    Color.fromRGBO(233, 64, 87, 1.0),
-                    Color.fromRGBO(242, 113, 33, 1.0)
-                  ]),
+      body: Builder(
+        builder: (context) => Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomLeft,
+                    colors: [
+                      Color.fromRGBO(130, 35, 135, 1.0),
+                      Color.fromRGBO(233, 64, 87, 1.0),
+                      Color.fromRGBO(242, 113, 33, 1.0)
+                    ]),
+              ),
             ),
-          ),
-          Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: width * 0.80,
-                  height: height * 0.50,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.4),
-                          blurRadius: 5.0,
-                          spreadRadius: 1.0,
-                        ),
-                      ]),
-                  child: GestureDetector(
-                    onPanDown: (details) {
-                      this.setState(() {
-                        points.add(details.localPosition);
-                      });
-                    },
-                    onPanUpdate: (details) {
-                      this.setState(() {
+            Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: width * 0.80,
+                    height: height * 0.50,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.4),
+                            blurRadius: 5.0,
+                            spreadRadius: 1.0,
+                          ),
+                        ]),
+                    child: GestureDetector(
+                      onPanDown: (details) {
                         this.setState(() {
                           points.add(details.localPosition);
                         });
-                      });
-                    },
-                    onPanEnd: (details) {
-                      this.setState(() {
-                        points.add(null);
-                      });
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                      child: CustomPaint(
-                        painter: MyCustomPainter(
-                            points: points,
-                            setColor: selectedColor,
-                            strokeWidth: strokeWidth),
+                      },
+                      onPanUpdate: (details) {
+                        this.setState(() {
+                          this.setState(() {
+                            points.add(details.localPosition);
+                          });
+                        });
+                      },
+                      onPanEnd: (details) {
+                        this.setState(() {
+                          points.add(null);
+                        });
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        child: CustomPaint(
+                          painter: MyCustomPainter(
+                              points: points,
+                              setColor: selectedColor,
+                              strokeWidth: strokeWidth),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 20.0,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  SizedBox(
+                    height: 20.0,
                   ),
-                  width: width * 0.80,
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.upload_rounded,
-                          color: selectedColor,
-                        ),
-                        onPressed: () {
-                          this.setState(() {
-                            points = List.from(savedDraw[0]);
-                            print(points);
-                          });
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.save,
-                          color: selectedColor,
-                        ),
-                        onPressed: () {
-                          // index
-                          savedDraw[0] = List.from(points);
-                        },
-                      ),
-                      IconButton(
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    ),
+                    width: width * 0.80,
+                    child: Row(
+                      children: [
+                        IconButton(
                           icon: Icon(
-                            Icons.color_lens,
+                            Icons.upload_rounded,
                             color: selectedColor,
                           ),
                           onPressed: () {
-                            selectColor();
-                          }),
-                      Expanded(
-                          child: Slider(
-                        min: 1.0,
-                        max: 10.0,
-                        activeColor: selectedColor,
-                        value: strokeWidth,
-                        onChanged: (newValue) {
-                          this.setState(() {
-                            strokeWidth = newValue;
-                          });
-                        },
-                      )),
-                      IconButton(
-                          icon: Icon(Icons.layers_clear),
-                          onPressed: () {
                             this.setState(() {
-                              points.clear();
+                              points = List.from(savedDraw[0]);
                             });
-                            print(points);
-                          }),
-                    ],
+                            showActionSnackBar(context, "Loaded!");
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.save,
+                            color: selectedColor,
+                          ),
+                          onPressed: () {
+                            // index
+                            this.setState(() {
+                              savedDraw[0] = List.from(points);
+                            });
+                            showActionSnackBar(context, "Saved!");
+                          },
+                        ),
+                        IconButton(
+                            icon: Icon(
+                              Icons.color_lens,
+                              color: selectedColor,
+                            ),
+                            onPressed: () {
+                              selectColor();
+                              showActionSnackBar(context, "Color Change!");
+                            }),
+                        Expanded(
+                            child: Slider(
+                          min: 1.0,
+                          max: 10.0,
+                          activeColor: selectedColor,
+                          value: strokeWidth,
+                          onChanged: (newValue) {
+                            this.setState(() {
+                              strokeWidth = newValue;
+                            });
+                          },
+                        )),
+                        IconButton(
+                            icon: Icon(Icons.layers_clear),
+                            onPressed: () {
+                              this.setState(() {
+                                points.clear();
+                              });
+                              showActionSnackBar(context, "Clear!");
+                            }),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+}
+
+// function snackbar
+void showActionSnackBar(BuildContext context, String msg) {
+  final snackBar = SnackBar(
+    content: Text(msg.toString() ?? "Clicked!", style: TextStyle(fontSize: 16)),
+    action: SnackBarAction(
+      label: "Dismiss",
+      onPressed: () {},
+    ),
+  );
+
+  Scaffold.of(context)
+    ..removeCurrentSnackBar()
+    ..showSnackBar(snackBar);
+}
+
+void showFloatingSnackBar(BuildContext context, String msg) {
+  final snackBar = SnackBar(
+    content: Text(
+      msg.toString() ?? 'Clicked 2!',
+      textAlign: TextAlign.center,
+      style: TextStyle(fontSize: 22),
+    ),
+    backgroundColor: Colors.amber,
+    duration: Duration(seconds: 3),
+    shape: StadiumBorder(),
+    behavior: SnackBarBehavior.floating,
+    margin: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+    elevation: 0,
+  );
+
+  Scaffold.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(snackBar);
+}
+
+void showCustomSnackBar(BuildContext context, String msg) {
+  final snackBar = SnackBar(
+    content: Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Icon(Icons.info_outline, size: 30),
+        const SizedBox(
+          width: 16,
+        ),
+        Expanded(
+          child: Text(
+            msg.toString() ?? "Clicked 3!",
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+      ],
+    ),
+    backgroundColor: Colors.green,
+    duration: Duration(seconds: 3),
+    shape: StadiumBorder(),
+    behavior: SnackBarBehavior.floating,
+    margin: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+    elevation: 0,
+  );
+
+  Scaffold.of(context)
+    ..removeCurrentSnackBar()
+    ..showSnackBar(snackBar);
+}
+
+void showErrorSnackBar(BuildContext context, String msg) {
+  final snackBar = SnackBar(
+    content: Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Icon(Icons.error_outline, size: 30),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Text(
+            msg.toString() ?? "Clicked 4!",
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+      ],
+    ),
+    backgroundColor: Colors.red,
+    duration: Duration(seconds: 3),
+    behavior: SnackBarBehavior.fixed,
+  );
+
+  Scaffold.of(context)
+    ..removeCurrentSnackBar()
+    ..showSnackBar(snackBar);
 }
