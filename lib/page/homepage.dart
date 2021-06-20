@@ -219,6 +219,15 @@ class _HomePageState extends State<HomePage> {
               fit: FlexFit.tight,
               child: Container(
                 width: width * 0.95,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.4),
+                        blurRadius: 5.0,
+                        spreadRadius: 5.0,
+                      ),
+                    ]),
                 margin: EdgeInsets.only(top: 10, bottom: 10),
                 child: GestureDetector(
                   onPanDown: (details) {
@@ -239,6 +248,7 @@ class _HomePageState extends State<HomePage> {
                     });
                   },
                   child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
                     child: CustomPaint(
                       painter: MyCustomPainter(
                           points: points,
@@ -256,11 +266,17 @@ class _HomePageState extends State<HomePage> {
                 margin: EdgeInsets.only(top: 10, bottom: 10),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 ),
-                width: width * 0.80,
+                width: width * 0.95,
                 child: Row(
                   children: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.cloud_download_outlined
+                      ),
+                      onPressed: () {},
+                    ),
                     IconButton(
                       icon: Icon(
                         Icons.save,
