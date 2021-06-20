@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:draw_aksara/page/homepage.dart';
 import 'package:flutter/material.dart';
 

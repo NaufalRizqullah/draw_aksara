@@ -6,7 +6,7 @@ class MyCustomPainter extends CustomPainter {
   Color setColor;
   double strokeWidth;
 
-  MyCustomPainter({this.points, this.setColor, this.strokeWidth});
+  MyCustomPainter({required this.points, required this.setColor, required this.strokeWidth});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -23,9 +23,9 @@ class MyCustomPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     for (int x = 0; x < points.length - 1; x++) {
-      if (points[x] != null && points[x + 1] != null) {
+      if (points[x] != Offset(0,0) && points[x + 1] != Offset(0,0)) {
         canvas.drawLine(points[x], points[x + 1], paint);
-      } else if (points[x] != null && points[x + 1] == null) {
+      } else if (points[x] != Offset(0,0) && points[x + 1] == Offset(0,0)) {
         canvas.drawPoints(PointMode.points, [points[x]], paint);
       }
     }

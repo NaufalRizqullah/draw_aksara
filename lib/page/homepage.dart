@@ -34,9 +34,9 @@ class _HomePageState extends State<HomePage> {
   // savedDraw
   List savedDraw = List.filled(90, [], growable: false);
 
-  Color selectedColor;
+  late Color selectedColor;
 
-  double strokeWidth;
+  late double strokeWidth;
 
   // fungsi untuk load dataDraw berdasarkan index
   void loadDraw(int indexSaved) {
@@ -56,36 +56,39 @@ class _HomePageState extends State<HomePage> {
   }
 
   // fungsi untuk pilih color, dari lib flutter_colorpicker
-  void selectColor() {
-    showDialog(
-        context: context,
-        child: AlertDialog(
-          title: const Text('Pilih Warna'),
-          content: SingleChildScrollView(
-            child: BlockPicker(
-              pickerColor: selectedColor,
-              onColorChanged: (color) {
-                this.setState(() {
-                  selectedColor = color;
-                });
-              },
-            ),
-          ),
-          actions: [
-            FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Keluar'),
-            )
-          ],
-        ));
-  }
 
   @override
   Widget build(BuildContext context) {
     // get size layar
     final double width = MediaQuery.of(context).size.width;
+
+    void selectColor() {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Pilih Warna'),
+              content: SingleChildScrollView(
+                child: BlockPicker(
+                  pickerColor: selectedColor,
+                  onColorChanged: (color) {
+                    this.setState(() {
+                      selectedColor = color;
+                    });
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Keluar'),
+                )
+              ],
+            );
+          });
+    }
 
     return new Scaffold(
       appBar: AppBar(
@@ -135,7 +138,7 @@ class _HomePageState extends State<HomePage> {
                   Flexible(
                     flex: 2,
                     fit: FlexFit.loose,
-                    child: RaisedButton(
+                    child: ElevatedButton(
                       child: Icon(Icons.arrow_back),
                       onPressed: () {
                         buttonCarouselController.previousPage(
@@ -143,8 +146,13 @@ class _HomePageState extends State<HomePage> {
                           curve: Curves.linear,
                         );
                       },
-                      shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(10.0),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue,
+                        onPrimary: Colors.white,
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(10.0),
+                        ),
                       ),
                     ),
                   ),
@@ -164,7 +172,7 @@ class _HomePageState extends State<HomePage> {
                   Flexible(
                     flex: 2,
                     fit: FlexFit.loose,
-                    child: RaisedButton(
+                    child: ElevatedButton(
                       child: Icon(Icons.arrow_forward),
                       onPressed: () {
                         buttonCarouselController.nextPage(
@@ -172,8 +180,13 @@ class _HomePageState extends State<HomePage> {
                           curve: Curves.linear,
                         );
                       },
-                      shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(10.0),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue,
+                        onPrimary: Colors.white,
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(10.0),
+                        ),
                       ),
                     ),
                   ),
@@ -220,7 +233,7 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 width: width * 0.95,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.4),
@@ -244,7 +257,7 @@ class _HomePageState extends State<HomePage> {
                   },
                   onPanEnd: (details) {
                     this.setState(() {
-                      points.add(null);
+                      points.add(Offset(0, 0));
                     });
                   },
                   child: ClipRRect(
@@ -272,9 +285,7 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(
-                        Icons.cloud_download_outlined
-                      ),
+                      icon: Icon(Icons.cloud_download_outlined),
                       onPressed: () {},
                     ),
                     IconButton(
@@ -328,14 +339,14 @@ class _HomePageState extends State<HomePage> {
 // function snackbar
 void showActionSnackBar(BuildContext context, String msg) {
   final snackBar = SnackBar(
-    content: Text(msg.toString() ?? "Clicked!", style: TextStyle(fontSize: 16)),
+    content: Text(msg.toString(), style: TextStyle(fontSize: 16)),
     action: SnackBarAction(
       label: "Dismiss",
       onPressed: () {},
     ),
   );
 
-  Scaffold.of(context)
+  ScaffoldMessenger.of(context)
     ..removeCurrentSnackBar()
     ..showSnackBar(snackBar);
 }
