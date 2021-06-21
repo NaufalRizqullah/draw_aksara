@@ -1,16 +1,31 @@
-# draw_aksara
+# Draw Aksara
 
-A new Flutter project.
+Draw Aksara is a Application Mobile a mobile. This application is used to collect Bima script image data which will be used as a research dataset. Can be used freely for educational purposes.
 
-## Getting Started
+## Usage
+- Clone this project, and opened in terminal
+```terminal
+flutter build apk
+```
 
-This project is a starting point for a Flutter application.
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-A few resources to get you started if this is your first Flutter project:
+## Contact
+[Github](https://github.com/NaufalRizqullah)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Changelog
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### [v.0.1.2]
+- Add Canvas
+- Add Controller for Canvas
+- Add Clear, Slider Size, Save(temporary) for handle canvas
+
+### [v.0.1.1]
+- Add Image Carousel for slider
+- Add Controller for Next/Previous Image
+
+### [v.0.1]
+- Adding Base App
+
+
