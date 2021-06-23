@@ -1,10 +1,14 @@
-import 'dart:ui';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:draw_aksara/helper/myCustomPainter.dart';
 import 'package:draw_aksara/page/aboutpage.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -38,6 +42,9 @@ class _HomePageState extends State<HomePage> {
   late Color selectedColor;
 
   late double strokeWidth;
+
+  // global key untuk dapat mengakses Repaint Boundary Widget
+  GlobalKey _globalKey = GlobalKey();
 
   @override
   void initState() {
@@ -306,31 +313,34 @@ class _HomePageState extends State<HomePage> {
                 ),
               ]),
           margin: EdgeInsets.only(top: 10, bottom: 10),
-          child: GestureDetector(
-            onPanDown: (details) {
-              this.setState(() {
-                points.add(details.localPosition);
-              });
-            },
-            onPanUpdate: (details) {
-              this.setState(() {
+          child: RepaintBoundary(
+            key: _globalKey,
+            child: GestureDetector(
+              onPanDown: (details) {
                 this.setState(() {
                   points.add(details.localPosition);
                 });
-              });
-            },
-            onPanEnd: (details) {
-              this.setState(() {
-                points.add(Offset(0, 0));
-              });
-            },
-            child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-              child: CustomPaint(
-                painter: MyCustomPainter(
-                    points: points,
-                    setColor: selectedColor,
-                    strokeWidth: strokeWidth),
+              },
+              onPanUpdate: (details) {
+                this.setState(() {
+                  this.setState(() {
+                    points.add(details.localPosition);
+                  });
+                });
+              },
+              onPanEnd: (details) {
+                this.setState(() {
+                  points.add(Offset(0, 0));
+                });
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                child: CustomPaint(
+                  painter: MyCustomPainter(
+                      points: points,
+                      setColor: selectedColor,
+                      strokeWidth: strokeWidth),
+                ),
               ),
             ),
           ),
@@ -358,7 +368,9 @@ class _HomePageState extends State<HomePage> {
             children: [
               IconButton(
                 icon: Icon(Icons.cloud_download_outlined),
-                onPressed: () {},
+                onPressed: () {
+                  exportDrawToImage();
+                },
               ),
               IconButton(
                 icon: Icon(
@@ -401,4 +413,39 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       );
+
+  Future<void> exportDrawToImage() async {
+    final status = await Permission.storage.status;
+    final time = DateTime.now().toIso8601String().replaceAll('.', ':');
+    final name = '${(currentIndex + 1)}_aksaraBima_$time.png';
+
+    // render image to bytes from widget
+    RenderRepaintBoundary boundary =
+        _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+
+    ui.Image image = await boundary.toImage();
+
+    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+    // request permission, if not granted
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+
+    final result = await ImageGallerySaver.saveImage(
+      Uint8List.fromList(pngBytes),
+      quality: 80,
+      name: name,
+    );
+
+    // kalo sukese pop notifikasi
+    final isSuccess = result['isSuccess'];
+
+    if (isSuccess) {
+      showActionSnackBar(context, "Image Successfully Saved!");
+    } else {
+      showActionSnackBar(context, "Image Failed to Saved!");
+    }
+  }
 }
