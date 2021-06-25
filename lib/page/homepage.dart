@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:draw_aksara/helper/crossSquared.dart';
 import 'package:draw_aksara/helper/myCustomPainter.dart';
 import 'package:draw_aksara/page/aboutpage.dart';
 import 'package:flutter/material.dart';
@@ -335,6 +336,7 @@ class _HomePageState extends State<HomePage> {
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 child: CustomPaint(
+                  foregroundPainter: CrossSquared(),
                   painter: MyCustomPainter(
                       points: points,
                       setColor: selectedColor,
