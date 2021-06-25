@@ -148,7 +148,6 @@ class _HomePageState extends State<HomePage> {
             controllerCanvas(
                 points: points,
                 selectColor: selectColor,
-                strokeWidth: strokeWidth,
                 selectedColor: selectedColor,
                 width: width),
           ],
@@ -351,7 +350,6 @@ class _HomePageState extends State<HomePage> {
   Widget controllerCanvas(
           {required double width,
           required Color selectedColor,
-          required double strokeWidth,
           required List<Offset> points,
           required selectColor}) =>
       Flexible(
@@ -435,7 +433,7 @@ class _HomePageState extends State<HomePage> {
 
     final result = await ImageGallerySaver.saveImage(
       Uint8List.fromList(pngBytes),
-      quality: 80,
+      quality: 100,
       name: name,
     );
 
