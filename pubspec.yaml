@@ -35,6 +35,9 @@ dependencies:
   # show snacbar
   another_flushbar: ^1.10.14
 
+  # syncfusion signature pad
+  syncfusion_flutter_signaturepad: ^19.1.69-beta
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

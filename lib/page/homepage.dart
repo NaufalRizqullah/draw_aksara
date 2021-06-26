@@ -1,7 +1,10 @@
-import 'package:draw_aksara/page/signature_preview_page.dart';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'package:draw_aksara/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:signature/signature.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -9,136 +12,116 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late SignatureController controller;
-
-  @override
-  void initState() {
-    controller =
-        SignatureController(penColor: Colors.white, penStrokeWidth: 5.0);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+  final GlobalKey<SfSignaturePadState> signatureGlobalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: AppBar(
-        title: Text("Draw Aksara"),
-        backgroundColor: Colors.black,
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Signature(
-            controller: controller,
-            backgroundColor: Colors.black,
-          ),
-          buildButtons(context),
-          buildSwapOrientation(),
-        ],
-      ),
-    );
-  }
-
-  Widget buildButtons(BuildContext context) => Container(
-        color: Colors.black,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            buildCheck(context),
-            buildClear(),
-          ],
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("Signature"),
         ),
-      );
-
-  Widget buildCheck(BuildContext context) => IconButton(
-        icon: Icon(Icons.check, color: Colors.green),
-        iconSize: 36,
-        onPressed: () async {
-          if (controller.isNotEmpty) {
-            final signature = await exportSignature();
-
-            await Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => SignaturePreviewPage(signature: signature),
-            ));
-
-            controller.clear();
-          }
-        },
-      );
-
-  Widget buildClear() => IconButton(
-        icon: Icon(Icons.clear, color: Colors.red),
-        iconSize: 36,
-        onPressed: () => controller.clear(),
-      );
-
-  exportSignature() async {
-    final exportController = SignatureController(
-      penStrokeWidth: 5,
-      penColor: Colors.black,
-      exportBackgroundColor: Colors.white,
-      points: controller.points,
-    );
-
-    final signature = await exportController.toPngBytes();
-
-    exportController.dispose();
-
-    return signature;
-  }
-
-  Widget buildSwapOrientation() {
-    final isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
-
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        final newOrientation =
-            isPortrait ? Orientation.landscape : Orientation.portrait;
-
-        controller.clear();
-        setOrientation(newOrientation);
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8),
-        child: Row(
+        body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(
-              isPortrait
-                  ? Icons.screen_lock_portrait
-                  : Icons.screen_lock_landscape,
-              size: 40,
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey,
+                  ),
+                ),
+                child: SfSignaturePad(
+                  key: signatureGlobalKey,
+                  backgroundColor: Colors.white,
+                  strokeColor: Colors.black,
+                  minimumStrokeWidth: 3.0,
+                  maximumStrokeWidth: 6.0,
+                ),
+              ),
             ),
-            const SizedBox(width: 12),
-            Text(
-              'Tap to change signature orientation',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  child: Text("To Image"),
+                  onPressed: _handleSaveButtonPressed,
+                ),
+                TextButton(
+                  child: Text("Clear"),
+                  onPressed: _handleClearButtonPressed,
+                ),
+              ],
+            )
           ],
-        ),
+        ));
+  }
+
+  void _handleClearButtonPressed() {
+    signatureGlobalKey.currentState!.clear();
+  }
+
+  void _handleSaveButtonPressed() async {
+    final data =
+        await signatureGlobalKey.currentState!.toImage(pixelRatio: 3.0);
+
+    final bytes = await data.toByteData(format: ui.ImageByteFormat.png);
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text("Preview"),
+              leading: BackButton(),
+              actions: [
+                IconButton(
+                  onPressed: () async =>
+                      storeSignature(context, bytes!.buffer.asUint8List()),
+                  icon: Icon(Icons.done),
+                ),
+              ],
+            ),
+            body: Center(
+              child: Container(
+                color: Colors.grey[300],
+                child: Image.memory(
+                  bytes!.buffer.asUint8List(),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  void setOrientation(Orientation orientation) {
-    if (orientation == Orientation.landscape) {
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeRight,
-        DeviceOrientation.landscapeLeft,
-      ]);
+  Future storeSignature(BuildContext context, Uint8List signature) async {
+    final status = await Permission.storage.status;
+
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+
+    final time = DateTime.now().toIso8601String().replaceAll('.', ':');
+    final name = 'signature_$time.png';
+
+    final result = await ImageGallerySaver.saveImage(signature, name: name);
+
+    final isSuccess = result['isSuccess'];
+
+    if (isSuccess) {
+      signatureGlobalKey.currentState!.clear();
+
+      Navigator.pop(context);
+
+      Utils.showSnackBar(context,
+          text: 'Saved to Signature Folder', color: Colors.green);
     } else {
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
+      Utils.showSnackBar(context,
+          text: 'Failed to save Signature', color: Colors.red);
     }
   }
 }
