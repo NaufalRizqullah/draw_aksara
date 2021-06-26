@@ -106,9 +106,13 @@ class _HomePageState extends State<HomePage> {
     }
 
     final time = DateTime.now().toIso8601String().replaceAll('.', ':');
-    final name = 'signature_$time.png';
+    final name = 'signature_$time';
 
-    final result = await ImageGallerySaver.saveImage(signature, name: name);
+    final result = await ImageGallerySaver.saveImage(
+      signature,
+      name: name,
+      quality: 100,
+    );
 
     final isSuccess = result['isSuccess'];
 
