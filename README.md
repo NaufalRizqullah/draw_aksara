@@ -16,6 +16,13 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Changelog
 
+### [v.0.2.0]
+- Change App Name
+- Adding about page
+- Implement Save Button for image
+- FIx Bug Stroke and increase quality image
+- add Line for the Canvas (For seperate script and sign)
+
 ### [v.0.1.2]
 - Add Canvas
 - Add Controller for Canvas
