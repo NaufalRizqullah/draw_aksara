@@ -16,6 +16,15 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Changelog
 
+### [v.0.2.1] Rev. 1
+- Optimization in animation transition (increade move speed)
+- Right now, canvas using lib (signaturepad)
+- Change size Canvas
+- Adjustment for stroke paint
+- Adding a Border Line on the canvas (this is temporary, can change later depending on the situation)
+- Remove Save Temporary (kinda useless)
+- Remove Actionbar for About Page
+
 ### [v.0.2.0]
 - Change App Name
 - Adding about page

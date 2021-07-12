@@ -28,6 +28,7 @@ dependencies:
   flutter_colorpicker: ^0.4.0
   image_gallery_saver: ^1.6.9
   permission_handler: ^8.1.1
+  another_flushbar: ^1.10.14
 
 dev_dependencies:
   flutter_test:
