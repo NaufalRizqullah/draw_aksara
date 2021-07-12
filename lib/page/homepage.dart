@@ -1,9 +1,13 @@
-import 'dart:ui';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
-import 'package:draw_aksara/helper/myCustomPainter.dart';
+import 'package:draw_aksara/utils/signature_lib.dart';
+import 'package:draw_aksara/utils/utils.dart';
+import 'package:draw_aksara/widget/image_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -11,9 +15,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // var index
-  int currentIndex = 0;
-
   // list asset image
   final List<String> imgAssets = [
     'assets/1.jpg',
@@ -25,28 +26,8 @@ class _HomePageState extends State<HomePage> {
     'assets/7.jpg',
   ];
 
-  // carousel controller
-  CarouselController buttonCarouselController = CarouselController();
-
-  // list yg nampung pointnya
-  List<Offset> points = [];
-
-  // savedDraw
-  List savedDraw = List.filled(90, [], growable: false);
-
   late Color selectedColor;
-
   late double strokeWidth;
-
-  // fungsi untuk load dataDraw berdasarkan index
-  void loadDraw(int indexSaved) {
-    points = List.from(savedDraw[indexSaved]);
-  }
-
-  // fungsi untuk save dataDraw berdasarkan index
-  void saveDraw(int indexSaved) {
-    savedDraw[indexSaved] = List.from(points);
-  }
 
   @override
   void initState() {
@@ -55,40 +36,12 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  // fungsi untuk pilih color, dari lib flutter_colorpicker
+  final GlobalKey<SfSignaturePadState> signatureGlobalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     // get size layar
     final double width = MediaQuery.of(context).size.width;
-
-    void selectColor() {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Pilih Warna'),
-              content: SingleChildScrollView(
-                child: BlockPicker(
-                  pickerColor: selectedColor,
-                  onColorChanged: (color) {
-                    this.setState(() {
-                      selectedColor = color;
-                    });
-                  },
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Keluar'),
-                )
-              ],
-            );
-          });
-    }
 
     return new Scaffold(
       appBar: AppBar(
@@ -130,101 +83,9 @@ class _HomePageState extends State<HomePage> {
         builder: (context) => Column(
           children: [
             Flexible(
-              flex: 1,
-              fit: FlexFit.tight,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Flexible(
-                    flex: 2,
-                    fit: FlexFit.loose,
-                    child: ElevatedButton(
-                      child: Icon(Icons.arrow_back),
-                      onPressed: () {
-                        buttonCarouselController.previousPage(
-                          duration: Duration(seconds: 1),
-                          curve: Curves.linear,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.blue,
-                        onPrimary: Colors.white,
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(10.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    fit: FlexFit.loose,
-                    child: Center(
-                      child: Text(
-                        "${(currentIndex + 1).toString()}",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Flexible(
-                    flex: 2,
-                    fit: FlexFit.loose,
-                    child: ElevatedButton(
-                      child: Icon(Icons.arrow_forward),
-                      onPressed: () {
-                        buttonCarouselController.nextPage(
-                          duration: Duration(seconds: 1),
-                          curve: Curves.linear,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.blue,
-                        onPrimary: Colors.white,
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(10.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Flexible(
-              flex: 4,
-              fit: FlexFit.tight,
-              child: Container(
-                child: CarouselSlider(
-                  carouselController: buttonCarouselController,
-                  items: imgAssets
-                      .map(
-                        (e) => Container(
-                          width: MediaQuery.of(context).size.width,
-                          child: Image.asset(
-                            e,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      )
-                      .toList(),
-                  options: CarouselOptions(
-                    initialPage: 0,
-                    enlargeCenterPage: true,
-                    aspectRatio: 16 / 9,
-                    height: MediaQuery.of(context).size.width * 0.8,
-                    viewportFraction: 1.0,
-                    enableInfiniteScroll: false,
-                    onPageChanged: (index, reason) {
-                      this.setState(() {
-                        currentIndex = index;
-                        loadDraw(currentIndex);
-                      });
-                    },
-                  ),
-                ),
+              flex: 5,
+              child: ImageSlider(
+                imgAssets: imgAssets,
               ),
             ),
             Flexible(
@@ -232,43 +93,12 @@ class _HomePageState extends State<HomePage> {
               fit: FlexFit.tight,
               child: Container(
                 width: width * 0.95,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.4),
-                        blurRadius: 5.0,
-                        spreadRadius: 5.0,
-                      ),
-                    ]),
-                margin: EdgeInsets.only(top: 10, bottom: 10),
-                child: GestureDetector(
-                  onPanDown: (details) {
-                    this.setState(() {
-                      points.add(details.localPosition);
-                    });
-                  },
-                  onPanUpdate: (details) {
-                    this.setState(() {
-                      this.setState(() {
-                        points.add(details.localPosition);
-                      });
-                    });
-                  },
-                  onPanEnd: (details) {
-                    this.setState(() {
-                      points.add(Offset(0, 0));
-                    });
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                    child: CustomPaint(
-                      painter: MyCustomPainter(
-                          points: points,
-                          setColor: selectedColor,
-                          strokeWidth: strokeWidth),
-                    ),
-                  ),
+                child: SfSignaturePad(
+                  key: signatureGlobalKey,
+                  backgroundColor: Colors.white,
+                  strokeColor: selectedColor,
+                  minimumStrokeWidth: 1.0 + strokeWidth,
+                  maximumStrokeWidth: 2.0 + strokeWidth,
                 ),
               ),
             ),
@@ -285,18 +115,9 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.cloud_download_outlined),
-                      onPressed: () {},
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.save,
-                      ),
+                      icon: Icon(Icons.download),
                       onPressed: () {
-                        showActionSnackBar(context, "Draw Saved!");
-                        this.setState(() {
-                          saveDraw(currentIndex);
-                        });
+                        _handleSaveButtonPressed();
                       },
                     ),
                     IconButton(
@@ -322,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                         icon: Icon(Icons.layers_clear),
                         onPressed: () {
                           this.setState(() {
-                            points.clear();
+                            _handleClearButtonPressed();
                           });
                         }),
                   ],
@@ -333,6 +154,105 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  void selectColor() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Pilih Warna'),
+          content: SingleChildScrollView(
+            child: BlockPicker(
+              pickerColor: selectedColor,
+              onColorChanged: (color) {
+                this.setState(() {
+                  selectedColor = color;
+                });
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Keluar'),
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void _handleClearButtonPressed() {
+    signatureGlobalKey.currentState!.clear();
+  }
+
+  void _handleSaveButtonPressed() async {
+    final data =
+        await signatureGlobalKey.currentState!.toImage(pixelRatio: 3.0);
+
+    final bytes = await data.toByteData(format: ui.ImageByteFormat.png);
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text("Preview"),
+              leading: BackButton(),
+              actions: [
+                IconButton(
+                  onPressed: () async =>
+                      storeSignature(context, bytes!.buffer.asUint8List()),
+                  icon: Icon(Icons.done),
+                ),
+              ],
+            ),
+            body: Center(
+              child: Container(
+                color: Colors.grey[300],
+                child: Image.memory(
+                  bytes!.buffer.asUint8List(),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future storeSignature(BuildContext context, Uint8List signature) async {
+    final status = await Permission.storage.status;
+
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+
+    final time = DateTime.now().toIso8601String().replaceAll('.', ':');
+    final name = 'signature_$time';
+
+    final result = await ImageGallerySaver.saveImage(
+      signature,
+      name: name,
+      quality: 100,
+    );
+
+    final isSuccess = result['isSuccess'];
+
+    if (isSuccess) {
+      signatureGlobalKey.currentState!.clear();
+
+      Navigator.pop(context);
+
+      Utils.showSnackBar(context,
+          text: 'Saved to Signature Folder', color: Colors.green);
+    } else {
+      Utils.showSnackBar(context,
+          text: 'Failed to save Signature', color: Colors.red);
+    }
   }
 }
 
