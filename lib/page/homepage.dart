@@ -50,17 +50,6 @@ class _HomePageState extends State<HomePage> {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 10.0),
-            child: InkResponse(
-              child: Icon(Icons.info_outline),
-              onTap: () {
-                debugPrint("Hit info");
-              },
-            ),
-          ),
-        ],
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -92,7 +81,8 @@ class _HomePageState extends State<HomePage> {
               flex: 4,
               fit: FlexFit.tight,
               child: Container(
-                width: width * 0.95,
+                padding: EdgeInsets.only(top: 10),
+                width: 250,
                 child: SfSignaturePad(
                   key: signatureGlobalKey,
                   backgroundColor: Colors.white,
