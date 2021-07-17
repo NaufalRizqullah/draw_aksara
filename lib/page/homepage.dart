@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
     String data = await rootBundle.loadString('assets/base/json/list.json');
     var jsonResult = jsonDecode(data);
     var list = AssetsImageBase.fromJson(jsonResult);
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 3), () {
       setState(() {
         imgAssets = list.listBase;
         isLoading = false;
@@ -99,8 +99,8 @@ class _HomePageState extends State<HomePage> {
                   key: signatureGlobalKey,
                   backgroundColor: Colors.white,
                   strokeColor: selectedColor,
-                  minimumStrokeWidth: 1.0 + strokeWidth,
-                  maximumStrokeWidth: 3.0 + strokeWidth,
+                  minimumStrokeWidth: strokeWidth,
+                  maximumStrokeWidth: 1.0 + strokeWidth,
                 ),
               ),
             ),

@@ -23,6 +23,8 @@ class _ImageSliderState extends State<ImageSlider> {
 
   @override
   Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+
     return Column(
       children: [
         Flexible(
@@ -55,7 +57,7 @@ class _ImageSliderState extends State<ImageSlider> {
                 fit: FlexFit.loose,
                 child: Center(
                   child: Text(
-                    "${(currentIndex + 1).toString()}",
+                    "${(currentIndex + 1).toString()} / ${widget.imgAssets.length}",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -89,6 +91,7 @@ class _ImageSliderState extends State<ImageSlider> {
           flex: 4,
           fit: FlexFit.tight,
           child: Container(
+            width: width * 0.95,
             child: CarouselSlider(
               carouselController: buttonCarouselController,
               items: widget.imgAssets
