@@ -1,13 +1,17 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'dart:convert';
 
+import 'package:draw_aksara/json/assets_image_base.dart';
 import 'package:draw_aksara/utils/signature_lib.dart';
 import 'package:draw_aksara/utils/utils.dart';
 import 'package:draw_aksara/widget/image_slider.dart';
+import 'package:draw_aksara/widget/shimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,105 +19,28 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Future loadJson() async {
+    String data = await rootBundle.loadString('assets/base/json/list.json');
+    var jsonResult = jsonDecode(data);
+    var list = AssetsImageBase.fromJson(jsonResult);
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        imgAssets = list.listBase;
+        isLoading = false;
+      });
+    });
+  }
+
   // list asset image
-  final List<String> imgAssets = [
-    "assets/base/a.png",
-    "assets/base/e.png",
-    "assets/base/i.png",
-    "assets/base/o.png",
-    "assets/base/u.png",
-    "assets/base/ba.png",
-    "assets/base/be.png",
-    "assets/base/bi.png",
-    "assets/base/bo.png",
-    "assets/base/bu.png",
-    "assets/base/ca.png",
-    "assets/base/ce.png",
-    "assets/base/ci.png",
-    "assets/base/co.png",
-    "assets/base/cu.png",
-    "assets/base/da.png",
-    "assets/base/de.png",
-    "assets/base/di.png",
-    "assets/base/do.png",
-    "assets/base/du.png",
-    "assets/base/fa.png",
-    "assets/base/fe.png",
-    "assets/base/fi.png",
-    "assets/base/fo.png",
-    "assets/base/fu.png",
-    "assets/base/ga.png",
-    "assets/base/ge.png",
-    "assets/base/gi.png",
-    "assets/base/go.png",
-    "assets/base/gu.png",
-    "assets/base/ha.png",
-    "assets/base/he.png",
-    "assets/base/hi.png",
-    "assets/base/ho.png",
-    "assets/base/hu.png",
-    "assets/base/ja.png",
-    "assets/base/je.png",
-    "assets/base/ji.png",
-    "assets/base/jo.png",
-    "assets/base/ju.png",
-    "assets/base/ka.png",
-    "assets/base/ke.png",
-    "assets/base/ki.png",
-    "assets/base/ko.png",
-    "assets/base/ku.png",
-    "assets/base/la.png",
-    "assets/base/le.png",
-    "assets/base/li.png",
-    "assets/base/lo.png",
-    "assets/base/lu.png",
-    "assets/base/ma.png",
-    "assets/base/me.png",
-    "assets/base/mi.png",
-    "assets/base/mo.png",
-    "assets/base/mu.png",
-    "assets/base/na.png",
-    "assets/base/ne.png",
-    "assets/base/ni.png",
-    "assets/base/no.png",
-    "assets/base/nu.png",
-    "assets/base/pa.png",
-    "assets/base/pe.png",
-    "assets/base/pi.png",
-    "assets/base/po.png",
-    "assets/base/pu.png",
-    "assets/base/ra.png",
-    "assets/base/re.png",
-    "assets/base/ri.png",
-    "assets/base/ro.png",
-    "assets/base/ru.png",
-    "assets/base/sa.png",
-    "assets/base/se.png",
-    "assets/base/si.png",
-    "assets/base/so.png",
-    "assets/base/su.png",
-    "assets/base/ta.png",
-    "assets/base/te.png",
-    "assets/base/ti.png",
-    "assets/base/to.png",
-    "assets/base/tu.png",
-    "assets/base/wa.png",
-    "assets/base/we.png",
-    "assets/base/wi.png",
-    "assets/base/wo.png",
-    "assets/base/wu.png",
-    "assets/base/ya.png",
-    "assets/base/ye.png",
-    "assets/base/yi.png",
-    "assets/base/yo.png",
-    "assets/base/yu.png"
-  ];
+  late List<String> imgAssets;
 
   late Color selectedColor;
   late double strokeWidth;
+  bool isLoading = true;
 
   @override
   void initState() {
+    loadJson();
     selectedColor = Colors.black;
     strokeWidth = 5.0;
     super.initState();
@@ -156,20 +83,25 @@ class _HomePageState extends State<HomePage> {
           children: [
             Flexible(
               flex: 5,
-              child: ImageSlider(
-                imgAssets: imgAssets,
-              ),
+              child: (isLoading)
+                  ? ShimmerLoading()
+                  : ImageSlider(
+                      imgAssets: imgAssets,
+                    ),
             ),
-            Container(
-              padding: EdgeInsets.only(top: 10),
-              width: 256.0,
-              height: 256.0,
-              child: SfSignaturePad(
-                key: signatureGlobalKey,
-                backgroundColor: Colors.white,
-                strokeColor: selectedColor,
-                minimumStrokeWidth: strokeWidth,
-                maximumStrokeWidth: 1.0 + strokeWidth,
+            Flexible(
+              flex: 4,
+              fit: FlexFit.loose,
+              child: Container(
+                padding: EdgeInsets.only(top: 10),
+                width: width * 0.95,
+                child: SfSignaturePad(
+                  key: signatureGlobalKey,
+                  backgroundColor: Colors.white,
+                  strokeColor: selectedColor,
+                  minimumStrokeWidth: 1.0 + strokeWidth,
+                  maximumStrokeWidth: 3.0 + strokeWidth,
+                ),
               ),
             ),
             Flexible(
@@ -201,7 +133,6 @@ class _HomePageState extends State<HomePage> {
                         child: Slider(
                       min: 1.0,
                       max: 20.0,
-                      activeColor: selectedColor,
                       value: strokeWidth,
                       onChanged: (newValue) {
                         this.setState(() {
