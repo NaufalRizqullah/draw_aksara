@@ -6,6 +6,7 @@ import 'package:draw_aksara/json/assets_image_base.dart';
 import 'package:draw_aksara/utils/signature_lib.dart';
 import 'package:draw_aksara/utils/utils.dart';
 import 'package:draw_aksara/widget/image_slider.dart';
+import 'package:draw_aksara/widget/pop_up_name.dart';
 import 'package:draw_aksara/widget/shimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -45,7 +46,7 @@ class _HomePageState extends State<HomePage> {
   late double strokeWidth;
   bool isLoading = true;
 
-  late String nameDay = "null";
+  late String nameDay = "null-DayNull";
 
   @override
   void initState() {
@@ -242,7 +243,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final time = DateTime.now().toIso8601String().replaceAll('.', ':');
-    final name = '${nameDay}_signature_$time';
+    final name = '${nameDay}_AksaraBima_$time';
 
     final result = await ImageGallerySaver.saveImage(
       signature,
@@ -266,27 +267,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future createAlertDialog(BuildContext context) {
-    TextEditingController customController = TextEditingController();
     return showDialog(
       barrierDismissible: false,
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Masukan Nama"),
-        content: TextField(
-          controller: customController,
-          decoration: InputDecoration(
-            hintText: 'Format: Name_Day1/2/3/...'
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(customController.text.toString());
-            },
-            child: Text('OK'),
-          ),
-        ],
-      ),
+      builder: (context) => PopUpNameDialog(),
     );
   }
 }
