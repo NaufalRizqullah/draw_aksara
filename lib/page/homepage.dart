@@ -19,10 +19,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future loadJson() async {
+  Future loadUp() async {
     String data = await rootBundle.loadString('assets/base/json/list.json');
     var jsonResult = jsonDecode(data);
     var list = AssetsImageBase.fromJson(jsonResult);
+
+    createAlertDialog(context).then((value) {
+      setState(() {
+        nameDay = value;
+      });
+    });
+
     Future.delayed(const Duration(seconds: 3), () {
       setState(() {
         imgAssets = list.listBase;
@@ -38,9 +45,11 @@ class _HomePageState extends State<HomePage> {
   late double strokeWidth;
   bool isLoading = true;
 
+  late String nameDay = "null";
+
   @override
   void initState() {
-    loadJson();
+    loadUp();
     selectedColor = Colors.black;
     strokeWidth = 5.0;
     super.initState();
@@ -233,7 +242,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final time = DateTime.now().toIso8601String().replaceAll('.', ':');
-    final name = 'signature_$time';
+    final name = '${nameDay}_signature_$time';
 
     final result = await ImageGallerySaver.saveImage(
       signature,
@@ -255,19 +264,29 @@ class _HomePageState extends State<HomePage> {
           text: 'Failed to save Signature', color: Colors.red);
     }
   }
-}
 
-// function snackbar
-void showActionSnackBar(BuildContext context, String msg) {
-  final snackBar = SnackBar(
-    content: Text(msg.toString(), style: TextStyle(fontSize: 16)),
-    action: SnackBarAction(
-      label: "Dismiss",
-      onPressed: () {},
-    ),
-  );
-
-  ScaffoldMessenger.of(context)
-    ..removeCurrentSnackBar()
-    ..showSnackBar(snackBar);
+  Future createAlertDialog(BuildContext context) {
+    TextEditingController customController = TextEditingController();
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Masukan Nama"),
+        content: TextField(
+          controller: customController,
+          decoration: InputDecoration(
+            hintText: 'Format: Name_Day1/2/3/...'
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(customController.text.toString());
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 }
