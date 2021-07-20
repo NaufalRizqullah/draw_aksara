@@ -6,16 +6,25 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:provider/provider.dart';
 
-class ImageSlider extends StatelessWidget {
+class ImageSlider extends StatefulWidget {
+  @override
+  _ImageSliderState createState() => _ImageSliderState();
+}
+
+class _ImageSliderState extends State<ImageSlider> {
+  int currentIndex = 0;
+
+  CarouselController buttonCarouselController = CarouselController();
+
   @override
   Widget build(BuildContext context) {
-    int currentIndex = 0;
-
-    CarouselController buttonCarouselController = CarouselController();
-
-    final instance = Provider.of<AssetsImageBase>(context, listen: false);
-
+    final instance = Provider.of<AssetsImageBase>(context);
     final double width = MediaQuery.of(context).size.width;
+
+    Future.delayed(Duration(seconds: 2), () {
+      // instance.fetchData(context);
+      context.read<AssetsImageBase>().fetchData(context);
+    });
 
     return (instance.getListBase() == null)
         ? ShimmerLoading()
@@ -108,7 +117,9 @@ class ImageSlider extends StatelessWidget {
                       viewportFraction: 1.0,
                       enableInfiniteScroll: false,
                       onPageChanged: (index, reason) {
-                        
+                        setState(() {
+                          currentIndex = index;
+                        });
                       },
                     ),
                   ),

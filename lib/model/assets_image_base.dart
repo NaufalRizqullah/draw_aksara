@@ -1,3 +1,4 @@
+import 'package:draw_aksara/services/assetsImageBase_api.dart';
 import 'package:flutter/material.dart';
 
 class AssetsImageBase extends ChangeNotifier {
@@ -16,6 +17,11 @@ class AssetsImageBase extends ChangeNotifier {
     return data;
   }
 
+  void fetchData(BuildContext context) {
+    AssetsImageBaseApi.getAssetsImageBaseLocally(context)
+        .then((value) => setListBase(value));
+  }
+
   // getter
   bool getIsLoading() => _isLoading;
   List<String>? getListBase() => listBase;
@@ -26,7 +32,7 @@ class AssetsImageBase extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setListBase(List<String> listBaseImage) {
+  void setListBase(List<String>? listBaseImage) {
     listBase = listBaseImage;
     notifyListeners();
     setIsLoading();
