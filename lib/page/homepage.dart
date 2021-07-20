@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:draw_aksara/model/index.dart';
 import 'package:draw_aksara/utils/signature_lib.dart';
 import 'package:draw_aksara/utils/utils.dart';
 import 'package:draw_aksara/widget/image_slider.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -36,6 +38,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
+     final instanceIndex = Provider.of<Index>(context, listen: false);
 
     return new Scaffold(
       appBar: AppBar(
@@ -99,7 +102,7 @@ class _HomePageState extends State<HomePage> {
                     IconButton(
                       icon: Icon(Icons.download),
                       onPressed: () {
-                        _handleSaveButtonPressed();
+                        _handleSaveButtonPressed(instanceIndex.getNameAksaraByIndex());
                       },
                     ),
                     IconButton(
@@ -170,7 +173,7 @@ class _HomePageState extends State<HomePage> {
     signatureGlobalKey.currentState!.clear();
   }
 
-  void _handleSaveButtonPressed() async {
+  void _handleSaveButtonPressed(String nAksara) async {
     final data =
         await signatureGlobalKey.currentState!.toImage(pixelRatio: 3.0);
 
@@ -186,7 +189,7 @@ class _HomePageState extends State<HomePage> {
               actions: [
                 IconButton(
                   onPressed: () async =>
-                      storeSignature(context, bytes!.buffer.asUint8List()),
+                      storeSignature(context, bytes!.buffer.asUint8List(), nAksara),
                   icon: Icon(Icons.done),
                 ),
               ],
@@ -205,7 +208,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future storeSignature(BuildContext context, Uint8List signature) async {
+  Future storeSignature(BuildContext context, Uint8List signature, String nAksara) async {
     final status = await Permission.storage.status;
 
     if (!status.isGranted) {
@@ -213,7 +216,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final time = DateTime.now().toIso8601String().replaceAll('.', ':');
-    final name = '${nameDay}_AksaraBima_$time';
+    final name = '${nameDay}_${nAksara}_Aksara_$time';
 
     final result = await ImageGallerySaver.saveImage(
       signature,
