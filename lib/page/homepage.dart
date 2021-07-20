@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:convert';
 
-import 'package:draw_aksara/json/assets_image_base.dart';
+import 'package:draw_aksara/model/assets_image_base.dart';
 import 'package:draw_aksara/utils/signature_lib.dart';
 import 'package:draw_aksara/utils/utils.dart';
 import 'package:draw_aksara/widget/image_slider.dart';
