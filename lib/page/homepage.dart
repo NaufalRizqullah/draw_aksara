@@ -1,13 +1,18 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'dart:convert';
 
+import 'package:draw_aksara/json/assets_image_base.dart';
 import 'package:draw_aksara/utils/signature_lib.dart';
 import 'package:draw_aksara/utils/utils.dart';
 import 'package:draw_aksara/widget/image_slider.dart';
+import 'package:draw_aksara/widget/pop_up_name.dart';
+import 'package:draw_aksara/widget/shimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,22 +20,37 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Future loadUp() async {
+    String data = await rootBundle.loadString('assets/base/json/list.json');
+    var jsonResult = jsonDecode(data);
+    var list = AssetsImageBase.fromJson(jsonResult);
+
+    createAlertDialog(context).then((value) {
+      setState(() {
+        nameDay = value;
+      });
+    });
+
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        imgAssets = list.listBase;
+        isLoading = false;
+      });
+    });
+  }
+
   // list asset image
-  final List<String> imgAssets = [
-    'assets/1.jpg',
-    'assets/2.png',
-    'assets/3.png',
-    'assets/4.png',
-    'assets/5.jpg',
-    'assets/6.jpg',
-    'assets/7.jpg',
-  ];
+  late List<String> imgAssets;
 
   late Color selectedColor;
   late double strokeWidth;
+  bool isLoading = true;
+
+  late String nameDay = "null-DayNull";
 
   @override
   void initState() {
+    loadUp();
     selectedColor = Colors.black;
     strokeWidth = 5.0;
     super.initState();
@@ -73,22 +93,24 @@ class _HomePageState extends State<HomePage> {
           children: [
             Flexible(
               flex: 5,
-              child: ImageSlider(
-                imgAssets: imgAssets,
-              ),
+              child: (isLoading)
+                  ? ShimmerLoading()
+                  : ImageSlider(
+                      imgAssets: imgAssets,
+                    ),
             ),
             Flexible(
               flex: 4,
-              fit: FlexFit.tight,
+              fit: FlexFit.loose,
               child: Container(
                 padding: EdgeInsets.only(top: 10),
-                width: 250,
+                width: width * 0.95,
                 child: SfSignaturePad(
                   key: signatureGlobalKey,
                   backgroundColor: Colors.white,
                   strokeColor: selectedColor,
-                  minimumStrokeWidth: 1.0 + strokeWidth,
-                  maximumStrokeWidth: 2.0 + strokeWidth,
+                  minimumStrokeWidth: strokeWidth,
+                  maximumStrokeWidth: 1.0 + strokeWidth,
                 ),
               ),
             ),
@@ -121,7 +143,6 @@ class _HomePageState extends State<HomePage> {
                         child: Slider(
                       min: 1.0,
                       max: 20.0,
-                      activeColor: selectedColor,
                       value: strokeWidth,
                       onChanged: (newValue) {
                         this.setState(() {
@@ -222,7 +243,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final time = DateTime.now().toIso8601String().replaceAll('.', ':');
-    final name = 'signature_$time';
+    final name = '${nameDay}_AksaraBima_$time';
 
     final result = await ImageGallerySaver.saveImage(
       signature,
@@ -244,19 +265,12 @@ class _HomePageState extends State<HomePage> {
           text: 'Failed to save Signature', color: Colors.red);
     }
   }
-}
 
-// function snackbar
-void showActionSnackBar(BuildContext context, String msg) {
-  final snackBar = SnackBar(
-    content: Text(msg.toString(), style: TextStyle(fontSize: 16)),
-    action: SnackBarAction(
-      label: "Dismiss",
-      onPressed: () {},
-    ),
-  );
-
-  ScaffoldMessenger.of(context)
-    ..removeCurrentSnackBar()
-    ..showSnackBar(snackBar);
+  Future createAlertDialog(BuildContext context) {
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => PopUpNameDialog(),
+    );
+  }
 }

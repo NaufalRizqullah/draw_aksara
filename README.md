@@ -16,6 +16,12 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Changelog
 
+### [v.0.2.2]
+- Add New Source Image (Bima Script)
+- Removed Again Border
+- Add Shimmer Loading before loading Image Base
+- Add Pop up dialog to insert name
+
 ### [v.0.2.1] Rev. 1
 - Optimization in animation transition (increade move speed)
 - Right now, canvas using lib (signaturepad)

@@ -1005,32 +1005,32 @@ class RenderSignaturePad extends RenderBox {
 
       ///// DRAW A LINE TO SEPERATE
       // garis horizontal atas
-      canvas.drawLine(
-        Offset(size.width * 0, size.height * 0.25),
-        Offset(size.width * 1, size.height * 0.25),
-        _paintBorderStyle,
-      );
+      // canvas.drawLine(
+      //   Offset(size.width * 0, size.height * 0.25),
+      //   Offset(size.width * 1, size.height * 0.25),
+      //   _paintBorderStyle,
+      // );
 
-      // garis horizontal bawah
-      canvas.drawLine(
-        Offset(size.width * 0, size.height * 0.75),
-        Offset(size.width * 1, size.height * 0.75),
-        _paintBorderStyle,
-      );
+      // // garis horizontal bawah
+      // canvas.drawLine(
+      //   Offset(size.width * 0, size.height * 0.75),
+      //   Offset(size.width * 1, size.height * 0.75),
+      //   _paintBorderStyle,
+      // );
 
-      // garis vertical kanan
-      canvas.drawLine(
-        Offset(size.width * 0.2, size.height * 0),
-        Offset(size.width * 0.2, size.height * 1),
-        _paintBorderStyle,
-      );
+      // // garis vertical kanan
+      // canvas.drawLine(
+      //   Offset(size.width * 0.2, size.height * 0),
+      //   Offset(size.width * 0.2, size.height * 1),
+      //   _paintBorderStyle,
+      // );
 
-      // garis vertical kiri
-      canvas.drawLine(
-        Offset(size.width * 0.8, size.height * 0),
-        Offset(size.width * 0.8, size.height * 1),
-        _paintBorderStyle,
-      );
+      // // garis vertical kiri
+      // canvas.drawLine(
+      //   Offset(size.width * 0.8, size.height * 0),
+      //   Offset(size.width * 0.8, size.height * 1),
+      //   _paintBorderStyle,
+      // );
       ///// DRAW A LINE TO SEPERATE
 
       if (_restrictBezierPathCalculation) {
