@@ -16,17 +16,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late Color selectedColor;
-  late double strokeWidth;
-
+  Color selectedColor = Colors.black;
+  double strokeWidth = 5.0;
   String nameDay = "null-DayNull";
 
   @override
   void initState() {
-    selectedColor = Colors.black;
-    strokeWidth = 5.0;
     super.initState();
-    // setelah super.initState(); baru bisa di ini
+    
     createAlertDialog(context).then((value) {
       setState(() {
         nameDay = value;
