@@ -16,6 +16,10 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Changelog
 
+### [v.0.2.3]
+- ImageList right now using provider to handle state (maximize state management)
+- Index right now using provider to handle state (maximize state management)
+
 ### [v.0.2.2]
 - Add New Source Image (Bima Script)
 - Removed Again Border
