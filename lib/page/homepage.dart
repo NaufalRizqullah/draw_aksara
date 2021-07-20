@@ -1,18 +1,14 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'dart:convert';
 
-import 'package:draw_aksara/model/assets_image_base.dart';
 import 'package:draw_aksara/utils/signature_lib.dart';
 import 'package:draw_aksara/utils/utils.dart';
 import 'package:draw_aksara/widget/image_slider.dart';
 import 'package:draw_aksara/widget/pop_up_name.dart';
-import 'package:draw_aksara/widget/shimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,47 +16,28 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future loadUp() async {
-    String data = await rootBundle.loadString('assets/base/json/list.json');
-    var jsonResult = jsonDecode(data);
-    var list = AssetsImageBase.fromJson(jsonResult);
+  late Color selectedColor;
+  late double strokeWidth;
 
+  String nameDay = "null-DayNull";
+
+  @override
+  void initState() {
+    selectedColor = Colors.black;
+    strokeWidth = 5.0;
+    super.initState();
+    // setelah super.initState(); baru bisa di ini
     createAlertDialog(context).then((value) {
       setState(() {
         nameDay = value;
       });
     });
-
-    Future.delayed(const Duration(seconds: 3), () {
-      setState(() {
-        imgAssets = list.listBase;
-        isLoading = false;
-      });
-    });
-  }
-
-  // list asset image
-  late List<String> imgAssets;
-
-  late Color selectedColor;
-  late double strokeWidth;
-  bool isLoading = true;
-
-  late String nameDay = "null-DayNull";
-
-  @override
-  void initState() {
-    loadUp();
-    selectedColor = Colors.black;
-    strokeWidth = 5.0;
-    super.initState();
   }
 
   final GlobalKey<SfSignaturePadState> signatureGlobalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    // get size layar
     final double width = MediaQuery.of(context).size.width;
 
     return new Scaffold(
@@ -93,11 +70,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Flexible(
               flex: 5,
-              child: (isLoading)
-                  ? ShimmerLoading()
-                  : ImageSlider(
-                      imgAssets: imgAssets,
-                    ),
+              child: ImageSlider(),
             ),
             Flexible(
               flex: 4,
@@ -266,7 +239,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future createAlertDialog(BuildContext context) {
+  createAlertDialog(BuildContext context) async {
+    await Future.delayed(Duration(milliseconds: 50));
     return showDialog(
       barrierDismissible: false,
       context: context,

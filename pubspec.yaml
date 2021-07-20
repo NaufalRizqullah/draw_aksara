@@ -30,6 +30,7 @@ dependencies:
   image_gallery_saver: ^1.6.9
   permission_handler: ^8.1.1
   shimmer: ^2.0.0
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
