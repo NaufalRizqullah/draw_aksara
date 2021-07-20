@@ -35,13 +35,7 @@ class _HomePageState extends State<HomePage> {
 
   final GlobalKey<SfSignaturePadState> signatureGlobalKey = GlobalKey();
 
-  @override
-  Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
-     final instanceIndex = Provider.of<Index>(context, listen: false);
-
-    return new Scaffold(
-      appBar: AppBar(
+  AppBar _appBar = AppBar(
         title: Text(
           "Draw Aksara",
           style: TextStyle(color: Colors.white),
@@ -63,8 +57,17 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-      ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+     final instanceIndex = Provider.of<Index>(context, listen: false);
+
+    return Scaffold(
+      appBar: _appBar,
       backgroundColor: Colors.blueAccent[100],
+      resizeToAvoidBottomInset: false,
       body: Builder(
         builder: (context) => Column(
           children: [
