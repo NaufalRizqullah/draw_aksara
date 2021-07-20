@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    
+
     createAlertDialog(context).then((value) {
       setState(() {
         nameDay = value;
@@ -35,7 +35,13 @@ class _HomePageState extends State<HomePage> {
 
   final GlobalKey<SfSignaturePadState> signatureGlobalKey = GlobalKey();
 
-  AppBar _appBar = AppBar(
+  @override
+  Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    final instanceIndex = Provider.of<Index>(context, listen: false);
+
+    return Scaffold(
+      appBar: AppBar(
         title: Text(
           "Draw Aksara",
           style: TextStyle(color: Colors.white),
@@ -57,15 +63,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-      );
-
-  @override
-  Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
-     final instanceIndex = Provider.of<Index>(context, listen: false);
-
-    return Scaffold(
-      appBar: _appBar,
+      ),
       backgroundColor: Colors.blueAccent[100],
       resizeToAvoidBottomInset: false,
       body: Builder(
@@ -105,7 +103,8 @@ class _HomePageState extends State<HomePage> {
                     IconButton(
                       icon: Icon(Icons.download),
                       onPressed: () {
-                        _handleSaveButtonPressed(instanceIndex.getNameAksaraByIndex());
+                        _handleSaveButtonPressed(
+                            instanceIndex.getNameAksaraByIndex());
                       },
                     ),
                     IconButton(
@@ -191,11 +190,28 @@ class _HomePageState extends State<HomePage> {
               leading: BackButton(),
               actions: [
                 IconButton(
-                  onPressed: () async =>
-                      storeSignature(context, bytes!.buffer.asUint8List(), nAksara),
+                  onPressed: () async => storeSignature(
+                      context, bytes!.buffer.asUint8List(), nAksara),
                   icon: Icon(Icons.done),
                 ),
               ],
+              centerTitle: true,
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      colors: [
+                        Color(0xff65799b),
+                        Color(0xff5e2563),
+                      ],
+                      begin: FractionalOffset.topLeft,
+                      end: FractionalOffset.bottomRight),
+                  image: DecorationImage(
+                    image: AssetImage("assets/pattern.png"),
+                    fit: BoxFit.none,
+                    repeat: ImageRepeat.repeat,
+                  ),
+                ),
+              ),
             ),
             body: Center(
               child: Container(
@@ -211,7 +227,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future storeSignature(BuildContext context, Uint8List signature, String nAksara) async {
+  Future storeSignature(
+      BuildContext context, Uint8List signature, String nAksara) async {
     final status = await Permission.storage.status;
 
     if (!status.isGranted) {
