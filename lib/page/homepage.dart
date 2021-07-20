@@ -1,18 +1,16 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'dart:convert';
 
-import 'package:draw_aksara/json/assets_image_base.dart';
+import 'package:draw_aksara/model/index.dart';
 import 'package:draw_aksara/utils/signature_lib.dart';
 import 'package:draw_aksara/utils/utils.dart';
 import 'package:draw_aksara/widget/image_slider.dart';
 import 'package:draw_aksara/widget/pop_up_name.dart';
-import 'package:draw_aksara/widget/shimmerLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,48 +18,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future loadUp() async {
-    String data = await rootBundle.loadString('assets/base/json/list.json');
-    var jsonResult = jsonDecode(data);
-    var list = AssetsImageBase.fromJson(jsonResult);
+  Color selectedColor = Colors.black;
+  double strokeWidth = 5.0;
+  String nameDay = "null-DayNull";
 
+  @override
+  void initState() {
+    super.initState();
+    
     createAlertDialog(context).then((value) {
       setState(() {
         nameDay = value;
       });
     });
-
-    Future.delayed(const Duration(seconds: 3), () {
-      setState(() {
-        imgAssets = list.listBase;
-        isLoading = false;
-      });
-    });
-  }
-
-  // list asset image
-  late List<String> imgAssets;
-
-  late Color selectedColor;
-  late double strokeWidth;
-  bool isLoading = true;
-
-  late String nameDay = "null-DayNull";
-
-  @override
-  void initState() {
-    loadUp();
-    selectedColor = Colors.black;
-    strokeWidth = 5.0;
-    super.initState();
   }
 
   final GlobalKey<SfSignaturePadState> signatureGlobalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    // get size layar
     final double width = MediaQuery.of(context).size.width;
+     final instanceIndex = Provider.of<Index>(context, listen: false);
 
     return new Scaffold(
       appBar: AppBar(
@@ -93,11 +70,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Flexible(
               flex: 5,
-              child: (isLoading)
-                  ? ShimmerLoading()
-                  : ImageSlider(
-                      imgAssets: imgAssets,
-                    ),
+              child: ImageSlider(),
             ),
             Flexible(
               flex: 4,
@@ -129,7 +102,7 @@ class _HomePageState extends State<HomePage> {
                     IconButton(
                       icon: Icon(Icons.download),
                       onPressed: () {
-                        _handleSaveButtonPressed();
+                        _handleSaveButtonPressed(instanceIndex.getNameAksaraByIndex());
                       },
                     ),
                     IconButton(
@@ -200,7 +173,7 @@ class _HomePageState extends State<HomePage> {
     signatureGlobalKey.currentState!.clear();
   }
 
-  void _handleSaveButtonPressed() async {
+  void _handleSaveButtonPressed(String nAksara) async {
     final data =
         await signatureGlobalKey.currentState!.toImage(pixelRatio: 3.0);
 
@@ -216,7 +189,7 @@ class _HomePageState extends State<HomePage> {
               actions: [
                 IconButton(
                   onPressed: () async =>
-                      storeSignature(context, bytes!.buffer.asUint8List()),
+                      storeSignature(context, bytes!.buffer.asUint8List(), nAksara),
                   icon: Icon(Icons.done),
                 ),
               ],
@@ -235,7 +208,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future storeSignature(BuildContext context, Uint8List signature) async {
+  Future storeSignature(BuildContext context, Uint8List signature, String nAksara) async {
     final status = await Permission.storage.status;
 
     if (!status.isGranted) {
@@ -243,7 +216,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     final time = DateTime.now().toIso8601String().replaceAll('.', ':');
-    final name = '${nameDay}_AksaraBima_$time';
+    final name = '${nameDay}_${nAksara}_Aksara_$time';
 
     final result = await ImageGallerySaver.saveImage(
       signature,
@@ -266,7 +239,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future createAlertDialog(BuildContext context) {
+  createAlertDialog(BuildContext context) async {
+    await Future.delayed(Duration(milliseconds: 50));
     return showDialog(
       barrierDismissible: false,
       context: context,
