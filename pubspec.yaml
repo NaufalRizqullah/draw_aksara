@@ -38,6 +38,9 @@ dependencies:
   # syncfusion signature pad
   syncfusion_flutter_signaturepad: ^19.1.69-beta
 
+  # another drawing lib
+  draw_your_image: ^0.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

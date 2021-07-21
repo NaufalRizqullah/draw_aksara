@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:draw_aksara/utils/signNature_lib.dart';
 import 'package:draw_aksara/utils/utils.dart';
+import 'package:draw_your_image/draw_your_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final GlobalKey<SfSignaturePadState> signatureGlobalKey = GlobalKey();
+  final _controller = DrawController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +27,22 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.all(10),
               child: Container(
+                width: MediaQuery.of(context).size.width * 0.90,
+                height: MediaQuery.of(context).size.width * 0.90,
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: Colors.grey,
                   ),
                 ),
-                child: SfSignaturePad(
-                  key: signatureGlobalKey,
+                child: Draw(
+                  controller: _controller,
                   backgroundColor: Colors.white,
                   strokeColor: Colors.black,
-                  minimumStrokeWidth: 3.0,
-                  maximumStrokeWidth: 6.0,
+                  strokeWidth: 5,
+                  isErasing: false,
+                  onConvertImage: (value) {
+                    _handleSaveButtonPressed(value);
+                  },
                 ),
               ),
             ),
@@ -47,11 +52,19 @@ class _HomePageState extends State<HomePage> {
               children: [
                 TextButton(
                   child: Text("To Image"),
-                  onPressed: _handleSaveButtonPressed,
+                  onPressed: _handleToImageButtonPressed,
                 ),
                 TextButton(
                   child: Text("Clear"),
                   onPressed: _handleClearButtonPressed,
+                ),
+                TextButton(
+                  child: Text("Undo"),
+                  onPressed: _handleUndoButtonPressed,
+                ),
+                TextButton(
+                  child: Text("Redo"),
+                  onPressed: _handleRedoButtonPressed,
                 ),
               ],
             )
@@ -59,16 +72,23 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
-  void _handleClearButtonPressed() {
-    signatureGlobalKey.currentState!.clear();
+  void _handleToImageButtonPressed() {
+    _controller.convertToImage();
   }
 
-  void _handleSaveButtonPressed() async {
-    final data =
-        await signatureGlobalKey.currentState!.toImage(pixelRatio: 3.0);
+  void _handleClearButtonPressed() {
+    _controller.clear();
+  }
 
-    final bytes = await data.toByteData(format: ui.ImageByteFormat.png);
+  void _handleUndoButtonPressed() {
+    _controller.undo();
+  }
 
+  void _handleRedoButtonPressed() {
+    _controller.redo();
+  }
+
+  void _handleSaveButtonPressed(final data) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) {
@@ -79,7 +99,7 @@ class _HomePageState extends State<HomePage> {
               actions: [
                 IconButton(
                   onPressed: () async =>
-                      storeSignature(context, bytes!.buffer.asUint8List()),
+                      storeSignature(context, data!.buffer.asUint8List()),
                   icon: Icon(Icons.done),
                 ),
               ],
@@ -88,7 +108,7 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 color: Colors.grey[300],
                 child: Image.memory(
-                  bytes!.buffer.asUint8List(),
+                  data!.buffer.asUint8List(),
                 ),
               ),
             ),
@@ -117,7 +137,7 @@ class _HomePageState extends State<HomePage> {
     final isSuccess = result['isSuccess'];
 
     if (isSuccess) {
-      signatureGlobalKey.currentState!.clear();
+      _controller.clear();
 
       Navigator.pop(context);
 
