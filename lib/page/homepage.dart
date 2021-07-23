@@ -1,8 +1,6 @@
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:draw_aksara/model/index.dart';
-import 'package:draw_aksara/utils/signature_lib.dart';
 import 'package:draw_aksara/utils/utils.dart';
 import 'package:draw_aksara/widget/image_slider.dart';
 import 'package:draw_aksara/widget/pop_up_name.dart';
@@ -11,6 +9,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:draw_your_image/draw_your_image.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -19,7 +18,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Color selectedColor = Colors.black;
-  double strokeWidth = 5.0;
+  double strokeWidth = 8.0;
   String nameDay = "null-DayNull";
 
   @override
@@ -33,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  final GlobalKey<SfSignaturePadState> signatureGlobalKey = GlobalKey();
+  final _controller = DrawController();
 
   @override
   Widget build(BuildContext context) {
@@ -77,16 +76,19 @@ class _HomePageState extends State<HomePage> {
               flex: 4,
               fit: FlexFit.loose,
               child: Container(
-                padding: EdgeInsets.only(top: 10),
-                width: width * 0.95,
-                child: SfSignaturePad(
-                  key: signatureGlobalKey,
-                  backgroundColor: Colors.white,
-                  strokeColor: selectedColor,
-                  minimumStrokeWidth: strokeWidth,
-                  maximumStrokeWidth: 1.0 + strokeWidth,
-                ),
-              ),
+                  padding: EdgeInsets.only(top: 10),
+                  width: width * 0.95,
+                  child: Draw(
+                    controller: _controller,
+                    backgroundColor: Colors.white,
+                    strokeColor: selectedColor,
+                    strokeWidth: strokeWidth,
+                    isErasing: false,
+                    onConvertImage: (value) {
+                      _handleSaveButtonPressed(
+                          value, instanceIndex.getNameAksaraByIndex());
+                    },
+                  )),
             ),
             Flexible(
               flex: 1,
@@ -103,8 +105,7 @@ class _HomePageState extends State<HomePage> {
                     IconButton(
                       icon: Icon(Icons.download),
                       onPressed: () {
-                        _handleSaveButtonPressed(
-                            instanceIndex.getNameAksaraByIndex());
+                        _handleToImageButtonPressed();
                       },
                     ),
                     IconButton(
@@ -113,6 +114,20 @@ class _HomePageState extends State<HomePage> {
                         ),
                         onPressed: () {
                           selectColor();
+                        }),
+                    IconButton(
+                        icon: Icon(
+                          Icons.undo,
+                        ),
+                        onPressed: () {
+                          _handleUndoButtonPressed();
+                        }),
+                    IconButton(
+                        icon: Icon(
+                          Icons.redo,
+                        ),
+                        onPressed: () {
+                          _handleRedoButtonPressed();
                         }),
                     Expanded(
                         child: Slider(
@@ -171,15 +186,27 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _handleClearButtonPressed() {
-    signatureGlobalKey.currentState!.clear();
+  void _handleToImageButtonPressed() {
+    _controller.convertToImage();
   }
 
-  void _handleSaveButtonPressed(String nAksara) async {
-    final data =
-        await signatureGlobalKey.currentState!.toImage(pixelRatio: 3.0);
+  void _handleClearButtonPressed() {
+    _controller.clear();
+  }
 
-    final bytes = await data.toByteData(format: ui.ImageByteFormat.png);
+  void _handleUndoButtonPressed() {
+    _controller.undo();
+  }
+
+  void _handleRedoButtonPressed() {
+    _controller.redo();
+  }
+
+  void _handleSaveButtonPressed(Uint8List bytes, String nAksara) async {
+    // final data =
+    //     await signatureGlobalKey.currentState!.toImage(pixelRatio: 3.0);
+
+    // final bytes = await data.toByteData(format: ui.ImageByteFormat.png);
 
     await Navigator.of(context).push(
       MaterialPageRoute(
@@ -191,7 +218,7 @@ class _HomePageState extends State<HomePage> {
               actions: [
                 IconButton(
                   onPressed: () async => storeSignature(
-                      context, bytes!.buffer.asUint8List(), nAksara),
+                      context, bytes.buffer.asUint8List(), nAksara),
                   icon: Icon(Icons.done),
                 ),
               ],
@@ -217,7 +244,7 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 color: Colors.grey[300],
                 child: Image.memory(
-                  bytes!.buffer.asUint8List(),
+                  bytes.buffer.asUint8List(),
                 ),
               ),
             ),
@@ -247,15 +274,13 @@ class _HomePageState extends State<HomePage> {
     final isSuccess = result['isSuccess'];
 
     if (isSuccess) {
-      signatureGlobalKey.currentState!.clear();
-
       Navigator.pop(context);
 
       Utils.showSnackBar(context,
-          text: 'Saved to Signature Folder', color: Colors.green);
+          text: 'Saved to Image Folder', color: Colors.green);
     } else {
       Utils.showSnackBar(context,
-          text: 'Failed to save Signature', color: Colors.red);
+          text: 'Failed to save Image', color: Colors.red);
     }
   }
 
