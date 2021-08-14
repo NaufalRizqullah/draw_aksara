@@ -245,6 +245,7 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.grey[300],
                 child: Image.memory(
                   bytes.buffer.asUint8List(),
+                  filterQuality: FilterQuality.high,
                 ),
               ),
             ),
