@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:draw_aksara/model/index.dart';
+import 'package:draw_aksara/utils/draw_your_image/draw_your_image.dart';
 import 'package:draw_aksara/utils/utils.dart';
 import 'package:draw_aksara/widget/image_slider.dart';
 import 'package:draw_aksara/widget/pop_up_name.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:draw_your_image/draw_your_image.dart';
 
 class HomePage extends StatefulWidget {
   @override
