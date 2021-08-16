@@ -485,12 +485,6 @@ class RenderSignaturePad extends RenderBox {
       ..style = PaintingStyle.fill
       ..isAntiAlias = true;
 
-    _paintBorderStyle = Paint()
-      ..color = Colors.blue
-      ..style = PaintingStyle.fill
-      ..strokeWidth = 3.0
-      ..isAntiAlias = true;
-
     _restrictBezierPathCalculation = _minimumStrokeWidth == _maximumStrokeWidth;
     _data = <List<_TouchPoint>>[];
     _bezierPoints = <_CachePoint>[];
@@ -514,7 +508,6 @@ class RenderSignaturePad extends RenderBox {
 
   late Paint _paintStrokeStyle;
   late Paint _paintBackgroundStyle;
-  late Paint _paintBorderStyle;
 
   late List<_TouchPoint> _lastPoints;
   late List<List<_TouchPoint>> _data;

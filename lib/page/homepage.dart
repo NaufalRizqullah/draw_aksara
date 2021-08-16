@@ -27,7 +27,9 @@ class _HomePageState extends State<HomePage> {
 
     createAlertDialog(context).then((value) {
       setState(() {
-        nameDay = value;
+        if (value != null) {
+          nameDay = value;
+        }
       });
     });
   }
@@ -242,10 +244,11 @@ class _HomePageState extends State<HomePage> {
             ),
             body: Center(
               child: Container(
-                color: Colors.grey[300],
+                color: Colors.black,
                 child: Image.memory(
                   bytes.buffer.asUint8List(),
                   filterQuality: FilterQuality.high,
+                  scale: 1.0,
                 ),
               ),
             ),

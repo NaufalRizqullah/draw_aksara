@@ -57,6 +57,11 @@ class _DrawState extends State<Draw> {
   Future<void> _convertToPng() async {
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder);
+    var dpr = window.devicePixelRatio;
+
+    // Scale some layer(pixel) to resolution on canvas phone
+     canvas.scale(dpr, dpr);
+
 
     // Emulate painting using _FreehandPainter
     // recorder will record this painting
@@ -68,7 +73,7 @@ class _DrawState extends State<Draw> {
     // Stop emulating and convert to Image
     final result = await recorder
         .endRecording()
-        .toImage(_canvasSize.width.floor(), _canvasSize.height.floor());
+        .toImage((_canvasSize.width.floor() * dpr).ceil(), (_canvasSize.height.floor() * dpr).ceil());
 
     // Cast image data to byte array with converting to png format
     final converted = (await result.toByteData(format: ImageByteFormat.png))!
