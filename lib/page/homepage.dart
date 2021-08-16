@@ -263,7 +263,7 @@ class _HomePageState extends State<HomePage> {
       await Permission.storage.request();
     }
 
-    final time = DateTime.now().toIso8601String().replaceAll('.', ':');
+    final time = DateTime.now().toIso8601String().replaceAll(':', '.');
     final name = '${nameDay}_${nAksara}_Aksara_$time';
 
     final result = await ImageGallerySaver.saveImage(
