@@ -19,7 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   Color selectedColor = Colors.black;
   double strokeWidth = 8.0;
-  String nameDay = "null-DayNull";
+  String nameDay = "null_DayNull";
 
   @override
   void initState() {
@@ -110,13 +110,13 @@ class _HomePageState extends State<HomePage> {
                         _handleToImageButtonPressed();
                       },
                     ),
-                    IconButton(
-                        icon: Icon(
-                          Icons.color_lens,
-                        ),
-                        onPressed: () {
-                          selectColor();
-                        }),
+                    // IconButton(
+                    //     icon: Icon(
+                    //       Icons.color_lens,
+                    //     ),
+                    //     onPressed: () {
+                    //       selectColor();
+                    //     }),
                     IconButton(
                         icon: Icon(
                           Icons.undo,
@@ -131,17 +131,17 @@ class _HomePageState extends State<HomePage> {
                         onPressed: () {
                           _handleRedoButtonPressed();
                         }),
-                    Expanded(
-                        child: Slider(
-                      min: 1.0,
-                      max: 20.0,
-                      value: strokeWidth,
-                      onChanged: (newValue) {
-                        this.setState(() {
-                          strokeWidth = newValue;
-                        });
-                      },
-                    )),
+                    // Expanded(
+                    //     child: Slider(
+                    //   min: 1.0,
+                    //   max: 20.0,
+                    //   value: strokeWidth,
+                    //   onChanged: (newValue) {
+                    //     this.setState(() {
+                    //       strokeWidth = newValue;
+                    //     });
+                    //   },
+                    // )),
                     IconButton(
                         icon: Icon(Icons.layers_clear),
                         onPressed: () {
