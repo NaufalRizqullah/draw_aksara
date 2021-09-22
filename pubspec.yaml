@@ -21,13 +21,14 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
   another_flushbar: ^1.10.14
   carousel_slider: ^4.0.0
   cupertino_icons: ^1.0.3
   draw_your_image: ^0.2.0
+  flutter:
+    sdk: flutter
   flutter_colorpicker: ^0.4.0
+  fluttertoast: ^8.0.8
   image_gallery_saver: ^1.6.9
   permission_handler: ^8.1.4+2
   provider: ^5.0.0

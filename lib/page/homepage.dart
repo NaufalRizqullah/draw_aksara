@@ -1,12 +1,17 @@
 import 'dart:typed_data';
 
 import 'package:draw_aksara/model/index.dart';
+import 'package:draw_aksara/model/menu_item.dart';
+import 'package:draw_aksara/model/menu_items.dart';
+import 'package:draw_aksara/page/aboutpage.dart';
 import 'package:draw_aksara/utils/draw_your_image/draw_your_image.dart';
 import 'package:draw_aksara/utils/utils.dart';
 import 'package:draw_aksara/widget/image_slider.dart';
 import 'package:draw_aksara/widget/pop_up_name.dart';
+import 'package:draw_aksara/widget/pop_up_stroke.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -18,14 +23,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Color selectedColor = Colors.black;
-  double strokeWidth = 8.0;
+  double strokeWidth = 10.0;
   String nameDay = "null_DayNull";
 
   @override
   void initState() {
     super.initState();
 
-    createAlertDialog(context).then((value) {
+    createAlertDialog(context, PopUpNameDialog()).then((value) {
       setState(() {
         if (value != null) {
           nameDay = value;
@@ -36,137 +41,152 @@ class _HomePageState extends State<HomePage> {
 
   final _controller = DrawController();
 
+  // Datettime for will popscope
+  DateTime timeBackPressed = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     final instanceIndex = Provider.of<Index>(context, listen: false);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Draw Aksara",
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                colors: [
-                  Color(0xff65799b),
-                  Color(0xff5e2563),
-                ],
-                begin: FractionalOffset.topLeft,
-                end: FractionalOffset.bottomRight),
-            image: DecorationImage(
-              image: AssetImage("assets/pattern.png"),
-              fit: BoxFit.none,
-              repeat: ImageRepeat.repeat,
-            ),
+    return WillPopScope(
+      onWillPop: () async {
+        final diff = DateTime.now()
+            .difference(timeBackPressed); // cek perbedaan teken tombol keluar
+        final isExitWarning = diff >= Duration(seconds: 2);
+
+        timeBackPressed = DateTime.now();
+
+        if (isExitWarning) {
+          Fluttertoast.showToast(
+            msg: "Press Back Again to Exit!",
+            fontSize: 18,
+          );
+          return false;
+        } else {
+          Fluttertoast.cancel();
+          return true;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "Draw Aksara",
+            style: TextStyle(color: Colors.white),
           ),
-        ),
-      ),
-      backgroundColor: Colors.blueAccent[100],
-      resizeToAvoidBottomInset: false,
-      body: Builder(
-        builder: (context) => Column(
-          children: [
-            Flexible(
-              flex: 5,
-              child: ImageSlider(),
-            ),
-            Flexible(
-              flex: 4,
-              fit: FlexFit.loose,
-              child: Container(
-                  padding: EdgeInsets.only(top: 10),
-                  width: width * 0.95,
-                  child: Draw(
-                    controller: _controller,
-                    backgroundColor: Colors.white,
-                    strokeColor: selectedColor,
-                    strokeWidth: strokeWidth,
-                    isErasing: false,
-                    onConvertImage: (value) {
-                      _handleSaveButtonPressed(
-                          value, instanceIndex.getNameAksaraByIndex());
-                    },
-                  )),
-            ),
-            Flexible(
-              flex: 1,
-              fit: FlexFit.tight,
-              child: Container(
-                margin: EdgeInsets.only(top: 10, bottom: 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                ),
-                width: width * 0.95,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    TextButton.icon(
-                      icon: Icon(Icons.download),
-                      label: Text(
-                        "Download",
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
-                      onPressed: () {
-                        _handleToImageButtonPressed();
-                      },
-                    ),
-                    // IconButton(
-                    //     icon: Icon(
-                    //       Icons.color_lens,
-                    //     ),
-                    //     onPressed: () {
-                    //       selectColor();
-                    //     }),
-                    TextButton.icon(
-                        icon: Icon(Icons.undo),
-                        label: Text(
-                          "Undo",
-                          style: TextStyle(color: Colors.grey[700]),
-                        ),
-                        onPressed: () {
-                          _handleUndoButtonPressed();
-                        }),
-                    TextButton.icon(
-                        icon: Icon(Icons.redo),
-                        label: Text(
-                          "Redo",
-                          style: TextStyle(color: Colors.grey[700]),
-                        ),
-                        onPressed: () {
-                          _handleRedoButtonPressed();
-                        }),
-                    // Expanded(
-                    //     child: Slider(
-                    //   min: 1.0,
-                    //   max: 20.0,
-                    //   value: strokeWidth,
-                    //   onChanged: (newValue) {
-                    //     this.setState(() {
-                    //       strokeWidth = newValue;
-                    //     });
-                    //   },
-                    // )),
-                    TextButton.icon(
-                        icon: Icon(Icons.layers_clear),
-                        label: Text(
-                          "Clear",
-                          style: TextStyle(color: Colors.grey[700]),
-                        ),
-                        onPressed: () {
-                          this.setState(() {
-                            _handleClearButtonPressed();
-                          });
-                        }),
+          centerTitle: true,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [
+                    Color(0xff65799b),
+                    Color(0xff5e2563),
                   ],
-                ),
+                  begin: FractionalOffset.topLeft,
+                  end: FractionalOffset.bottomRight),
+              image: DecorationImage(
+                image: AssetImage("assets/pattern.png"),
+                fit: BoxFit.none,
+                repeat: ImageRepeat.repeat,
               ),
             ),
+          ),
+          actions: [
+            PopupMenuButton<MenuItem>(
+              onSelected: (item) => onSelected(context, item),
+              itemBuilder: (context) => [
+                ...MenuItems.itemsFirst.map(buildItem).toList(),
+                PopupMenuDivider(),
+                ...MenuItems.itemSecond.map(buildItem).toList(),
+              ],
+            ),
           ],
+        ),
+        backgroundColor: Colors.blueAccent[100],
+        resizeToAvoidBottomInset: false,
+        body: Builder(
+          builder: (context) => Column(
+            children: [
+              Flexible(
+                flex: 5,
+                child: ImageSlider(),
+              ),
+              Flexible(
+                flex: 4,
+                fit: FlexFit.loose,
+                child: Container(
+                    padding: EdgeInsets.only(top: 10),
+                    width: width * 0.95,
+                    child: Draw(
+                      controller: _controller,
+                      backgroundColor: Colors.white,
+                      strokeColor: selectedColor,
+                      strokeWidth: strokeWidth,
+                      isErasing: false,
+                      onConvertImage: (value) {
+                        _handleSaveButtonPressed(
+                            value, instanceIndex.getNameAksaraByIndex());
+                      },
+                    )),
+              ),
+              Flexible(
+                flex: 1,
+                fit: FlexFit.tight,
+                child: Container(
+                  margin: EdgeInsets.only(top: 10, bottom: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  ),
+                  width: width * 0.95,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton.icon(
+                        icon: Icon(Icons.download),
+                        label: Text(
+                          "Save",
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                        onPressed: () {
+                          _handleToImageButtonPressed();
+                        },
+                      ),
+                      TextButton.icon(
+                          icon: Icon(Icons.undo),
+                          label: Text(
+                            "Undo",
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                          onPressed: () {
+                            _handleUndoButtonPressed();
+                          }),
+                      TextButton.icon(
+                          icon: Icon(Icons.redo),
+                          label: Text(
+                            "Redo",
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                          onPressed: () {
+                            _handleRedoButtonPressed();
+                          }),
+                      TextButton.icon(
+                          icon: Icon(Icons.layers_clear),
+                          label: Text(
+                            "Clear",
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                          onPressed: () {
+                            this.setState(() {
+                              _handleClearButtonPressed();
+                            });
+                          }),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -301,12 +321,63 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  createAlertDialog(BuildContext context) async {
+  createAlertDialog(BuildContext context, final alertDialog,
+      {bool dismiss = false}) async {
     await Future.delayed(Duration(milliseconds: 50));
     return showDialog(
-      barrierDismissible: false,
+      barrierDismissible: dismiss,
       context: context,
-      builder: (context) => PopUpNameDialog(),
+      builder: (context) => alertDialog,
     );
+  }
+
+  PopupMenuItem<MenuItem> buildItem(MenuItem item) {
+    return PopupMenuItem<MenuItem>(
+        value: item,
+        child: Row(
+          children: [
+            Icon(
+              item.icon,
+              color: Colors.black,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Text(item.text),
+          ],
+        ));
+  }
+
+  void onSelected(BuildContext context, MenuItem item) {
+    switch (item) {
+      case MenuItems.itemSettingStroke:
+        // pop up settting value stroke
+        createAlertDialog(context, PopUpStroke(), dismiss: true).then((value) {
+          setState(() {
+            if (value != null) {
+              strokeWidth = double.parse(value);
+            } else {
+              strokeWidth = 10.0;
+            }
+          });
+        });
+
+        break;
+
+      case MenuItems.itemAboutPage:
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => AboutPage(),
+          ),
+        );
+        break;
+
+      case MenuItems.itemSignOut:
+        // exit app
+        Fluttertoast.showToast(
+          msg: "Belum Implementasi!",
+          fontSize: 18,
+        );
+        break;
+    }
   }
 }
