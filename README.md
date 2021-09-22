@@ -16,6 +16,14 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Changelog
 
+### [v.0.2.4]
+- Fix Keyboard appear
+- Change library drawing
+- Fix bug android 11 when cant save a file
+- Implement undo and redo
+- Change Navigator, by removing color and slider size stroke
+- Handle Press back exit
+
 ### [v.0.2.3]
 - ImageList right now using provider to handle state (maximize state management)
 - Index right now using provider to handle state (maximize state management)
