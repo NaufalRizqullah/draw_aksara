@@ -103,9 +103,14 @@ class _HomePageState extends State<HomePage> {
                 ),
                 width: width * 0.95,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    IconButton(
+                    TextButton.icon(
                       icon: Icon(Icons.download),
+                      label: Text(
+                        "Download",
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
                       onPressed: () {
                         _handleToImageButtonPressed();
                       },
@@ -117,16 +122,20 @@ class _HomePageState extends State<HomePage> {
                     //     onPressed: () {
                     //       selectColor();
                     //     }),
-                    IconButton(
-                        icon: Icon(
-                          Icons.undo,
+                    TextButton.icon(
+                        icon: Icon(Icons.undo),
+                        label: Text(
+                          "Undo",
+                          style: TextStyle(color: Colors.grey[700]),
                         ),
                         onPressed: () {
                           _handleUndoButtonPressed();
                         }),
-                    IconButton(
-                        icon: Icon(
-                          Icons.redo,
+                    TextButton.icon(
+                        icon: Icon(Icons.redo),
+                        label: Text(
+                          "Redo",
+                          style: TextStyle(color: Colors.grey[700]),
                         ),
                         onPressed: () {
                           _handleRedoButtonPressed();
@@ -142,8 +151,12 @@ class _HomePageState extends State<HomePage> {
                     //     });
                     //   },
                     // )),
-                    IconButton(
+                    TextButton.icon(
                         icon: Icon(Icons.layers_clear),
+                        label: Text(
+                          "Clear",
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
                         onPressed: () {
                           this.setState(() {
                             _handleClearButtonPressed();
