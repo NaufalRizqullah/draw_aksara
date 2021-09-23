@@ -12,7 +12,7 @@ flutter build apk
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## Contact
-[Github](https://github.com/NaufalRizqullah)
+[:mailbox: Email](mailto:m.naufalrizqullah17@gmail.com)
 
 ## Changelog
 
