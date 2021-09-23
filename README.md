@@ -16,7 +16,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Changelog
 
-### [v.0.2.4]
+### [v.0.2.4 Release 1](https://drive.google.com/file/d/1avjrLK9vu9c-fuPrK-A7X-nH4hYogkkm/view?usp=sharing)
 - Fix Keyboard appear
 - Change library drawing
 - Fix bug android 11 when cant save a file
